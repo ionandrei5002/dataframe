@@ -64,7 +64,7 @@ bytebuffer::~bytebuffer()
 
 std::ostream& operator <<(std::ostream& output, const bytebuffer& ot)
 {
-    output << ot._size << " " << ot._buffer;
+    output << ot._buffer;
 
     return output;
 }

@@ -5,7 +5,8 @@
 
 #include "types.h"
 #include "bytebuffer.h"
-#include "entry.h"
+#include "column.h"
+#include "value.h"
 
 using namespace std;
 
@@ -15,9 +16,23 @@ int main()
 {
     fstream input("/home/andrei/Desktop/oldies/desktop4/waa_android.csv");
     string line;
-    std::vector<vector<unique_ptr<entry>>> columns{13};
 
     vector<string> piece;
+
+    vector<unique_ptr<Column>> columns;
+    columns.push_back(Column::factory(Type::STRING));
+    columns.push_back(Column::factory(Type::STRING));
+    columns.push_back(Column::factory(Type::STRING));
+    columns.push_back(Column::factory(Type::STRING));
+    columns.push_back(Column::factory(Type::STRING));
+    columns.push_back(Column::factory(Type::STRING));
+    columns.push_back(Column::factory(Type::STRING));
+    columns.push_back(Column::factory(Type::STRING));
+    columns.push_back(Column::factory(Type::STRING));
+    columns.push_back(Column::factory(Type::STRING));
+    columns.push_back(Column::factory(Type::STRING));
+    columns.push_back(Column::factory(Type::STRING));
+    columns.push_back(Column::factory(Type::STRING));
 
     while(getline(input, line))
     {
@@ -25,7 +40,8 @@ int main()
 
         for(size_t i = 0; i < piece.size(); i++)
         {
-            columns[i].emplace_back(make_unique<typedentry<StringType>>(typedentry<StringType>(piece[i])));
+            string* value = &piece.at(i);
+            columns.at(i)->putValue(value->data(), value->size());
         }
 
         piece.clear();
