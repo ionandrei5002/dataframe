@@ -69,10 +69,10 @@ int main()
         for(uint64_t j = 0; j < columns.size() - 1; j++)
         {
             std::unique_ptr<Value> value = columns[j]->getValue(i);
-//            cout << value->getValue() << ",";
+            cout << value->getValue() << ",";
         }
         std::unique_ptr<Value> value = columns[columns.size() - 1]->getValue(i);
-//        cout << value->getValue() << endl;
+        cout << value->getValue() << endl;
     }
 
     return 0;
@@ -83,10 +83,10 @@ void split(vector<string>& results, string const& original, char separator)
     string::const_iterator start = original.begin();
     string::const_iterator end = original.end();
     string::const_iterator next = find(start, end, separator);
-//    while(next != end && *start == '"' && *(next-1) != '"')
-//    {
-//        next = find(next + 1, end, separator);
-//    }
+    while(next != end && *start == '"' && *(next-1) != '"')
+    {
+        next = find(next + 1, end, separator);
+    }
     while (next != end) {
 
         string str(start, next);
