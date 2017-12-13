@@ -10,6 +10,10 @@
 class Column
 {
 public:
+    std::vector<uint8_t> _column;
+    std::vector<uint64_t> _position;
+    uint64_t nb_elements = 0;
+public:
     virtual ~Column(){}
     static std::unique_ptr<Column> factory(Type::type type);
     virtual void putValue(std::unique_ptr<Value> value) = 0;
@@ -20,9 +24,6 @@ public:
 template<typename T>
 class TypedColumn: public Column
 {
-private:
-    std::set<std::string> _dict;
-    std::vector<TypedValue<T>> _column;
 public:
     void putValue(std::unique_ptr<Value> value) override;
     void putValue(const char* value, uint64_t size) override;

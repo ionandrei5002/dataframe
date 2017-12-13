@@ -64,7 +64,10 @@ bytebuffer::~bytebuffer()
 
 std::ostream& operator <<(std::ostream& output, const bytebuffer& ot)
 {
-    output << ot._buffer;
+    for(uint64_t i = 0; i < ot._size; i++)
+    {
+        output << ot._buffer[i];
+    }
 
     return output;
 }

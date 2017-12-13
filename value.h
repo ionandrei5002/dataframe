@@ -11,6 +11,7 @@ class Value
 public:
     virtual ~Value(){}
     virtual void setValue(const char* value, uint64_t size) = 0;
+    virtual bytebuffer getValue() = 0;
 };
 
 template<typename T>
@@ -19,6 +20,7 @@ private:
     typename T::c_type _value;
 public:
     void setValue(const char* value, uint64_t size) override;
+    bytebuffer getValue() override;
 };
 
 template<>
@@ -27,6 +29,7 @@ private:
     StringType::c_type _value;
 public:
     void setValue(const char* value, uint64_t size) override;
+    bytebuffer getValue() override;
 };
 
 template class TypedValue<UInt8Type>;

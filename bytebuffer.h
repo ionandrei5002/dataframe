@@ -7,7 +7,7 @@
 
 class bytebuffer
 {
-private:
+public:
     uint64_t _size = 0;
     uint8_t* _buffer = nullptr;
 public:
