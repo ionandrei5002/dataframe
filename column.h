@@ -32,10 +32,14 @@ public:
 
 template class TypedColumn<UInt8Type>;
 template class TypedColumn<Int8Type>;
+template class TypedColumn<UInt16Type>;
+template class TypedColumn<Int16Type>;
 template class TypedColumn<UInt32Type>;
 template class TypedColumn<Int32Type>;
 template class TypedColumn<UInt64Type>;
 template class TypedColumn<Int64Type>;
+template class TypedColumn<FloatType>;
+template class TypedColumn<DoubleType>;
 template class TypedColumn<StringType>;
 
 #endif // COLUMN_H

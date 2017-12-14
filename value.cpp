@@ -1,6 +1,17 @@
 #include "value.h"
 
 template<typename T>
+void TypedValue<T>::print(std::ostream& output)
+{
+    output << _value;
+}
+
+void TypedValue<StringType>::print(std::ostream& output)
+{
+    output << _value;
+}
+
+template<typename T>
 bytebuffer TypedValue<T>::getValue()
 {
     uint64_t size = sizeof(_value);

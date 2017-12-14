@@ -12,6 +12,7 @@ public:
     virtual ~Value(){}
     virtual void setValue(const char* value, uint64_t size) = 0;
     virtual bytebuffer getValue() = 0;
+    virtual void print(std::ostream& output) = 0;
 };
 
 template<typename T>
@@ -21,6 +22,7 @@ private:
 public:
     void setValue(const char* value, uint64_t size) override;
     bytebuffer getValue() override;
+    void print(std::ostream& output) override;
 };
 
 template<>
@@ -30,14 +32,19 @@ private:
 public:
     void setValue(const char* value, uint64_t size) override;
     bytebuffer getValue() override;
+    void print(std::ostream& output) override;
 };
 
 template class TypedValue<UInt8Type>;
 template class TypedValue<Int8Type>;
+template class TypedValue<UInt16Type>;
+template class TypedValue<Int16Type>;
 template class TypedValue<UInt32Type>;
 template class TypedValue<Int32Type>;
 template class TypedValue<UInt64Type>;
 template class TypedValue<Int64Type>;
+template class TypedValue<FloatType>;
+template class TypedValue<DoubleType>;
 template class TypedValue<StringType>;
 
 #endif // VALUE_H

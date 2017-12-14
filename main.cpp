@@ -14,29 +14,27 @@ void split(vector<string>& results, string const& original, char separator);
 
 int main()
 {
-    fstream input("/home/andrei/Desktop/oldies/desktop4/waa_android.csv");
+    fstream input("/home/andrei/Desktop/data.csv");
     string line;
 
     vector<string> piece;
 
     vector<unique_ptr<Column>> columns;
-    columns.push_back(Column::factory(Type::STRING));
-    columns.push_back(Column::factory(Type::STRING));
-    columns.push_back(Column::factory(Type::STRING));
-    columns.push_back(Column::factory(Type::STRING));
-    columns.push_back(Column::factory(Type::STRING));
-    columns.push_back(Column::factory(Type::STRING));
-    columns.push_back(Column::factory(Type::STRING));
-    columns.push_back(Column::factory(Type::STRING));
-    columns.push_back(Column::factory(Type::STRING));
-    columns.push_back(Column::factory(Type::STRING));
-    columns.push_back(Column::factory(Type::STRING));
-    columns.push_back(Column::factory(Type::STRING));
+    columns.push_back(Column::factory(Type::UINT8));
+    columns.push_back(Column::factory(Type::INT8));
+    columns.push_back(Column::factory(Type::UINT16));
+    columns.push_back(Column::factory(Type::INT16));
+    columns.push_back(Column::factory(Type::UINT32));
+    columns.push_back(Column::factory(Type::INT32));
+    columns.push_back(Column::factory(Type::UINT64));
+    columns.push_back(Column::factory(Type::INT64));
+    columns.push_back(Column::factory(Type::FLOAT));
+    columns.push_back(Column::factory(Type::DOUBLE));
     columns.push_back(Column::factory(Type::STRING));
 
     while(getline(input, line))
     {
-        split(piece, line, ',');
+        split(piece, line, ';');
         for(size_t i = 0; i < piece.size(); i++)
         {
             string* value = &piece.at(i);
@@ -69,10 +67,12 @@ int main()
         for(uint64_t j = 0; j < columns.size() - 1; j++)
         {
             std::unique_ptr<Value> value = columns[j]->getValue(i);
-            cout << value->getValue() << ",";
+//            value->print(cout);
+//            cout << ",";
         }
         std::unique_ptr<Value> value = columns[columns.size() - 1]->getValue(i);
-        cout << value->getValue() << endl;
+//        value->print(cout);
+//        cout << endl;
     }
 
     return 0;

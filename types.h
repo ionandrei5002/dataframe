@@ -10,10 +10,14 @@ struct Type
     {
         UINT8,
         INT8,
+        UINT16,
+        INT16,
         UINT32,
         INT32,
         UINT64,
         INT64,
+        FLOAT,
+        DOUBLE,
         STRING
     };
 };
@@ -38,6 +42,22 @@ struct type_traits<Type::INT8>
     typedef int8_t value_type;
     static constexpr char* name = const_cast<char*>("INT8");
     static constexpr int value_byte_size = 1;
+};
+
+template<>
+struct type_traits<Type::UINT16>
+{
+    typedef uint16_t value_type;
+    static constexpr char* name = const_cast<char*>("UINT16");
+    static constexpr int value_byte_size = 2;
+};
+
+template<>
+struct type_traits<Type::INT16>
+{
+    typedef int16_t value_type;
+    static constexpr char* name = const_cast<char*>("INT16");
+    static constexpr int value_byte_size = 2;
 };
 
 template<>
@@ -73,6 +93,22 @@ struct type_traits<Type::INT64>
 };
 
 template<>
+struct type_traits<Type::FLOAT>
+{
+    typedef float value_type;
+    static constexpr char* name = const_cast<char*>("FLOAT");
+    static constexpr int value_byte_size = 4;
+};
+
+template<>
+struct type_traits<Type::DOUBLE>
+{
+    typedef double value_type;
+    static constexpr char* name = const_cast<char*>("DOUBLE");
+    static constexpr int value_byte_size = 8;
+};
+
+template<>
 struct type_traits<Type::STRING>
 {
     typedef bytebuffer value_type;
@@ -90,10 +126,14 @@ struct DataType
 
 typedef DataType<Type::UINT8> UInt8Type;
 typedef DataType<Type::INT8> Int8Type;
+typedef DataType<Type::UINT16> UInt16Type;
+typedef DataType<Type::INT16> Int16Type;
 typedef DataType<Type::UINT32> UInt32Type;
 typedef DataType<Type::INT32> Int32Type;
 typedef DataType<Type::UINT64> UInt64Type;
 typedef DataType<Type::INT64> Int64Type;
+typedef DataType<Type::FLOAT> FloatType;
+typedef DataType<Type::DOUBLE> DoubleType;
 typedef DataType<Type::STRING> StringType;
 
 #endif // TYPES
