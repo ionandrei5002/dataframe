@@ -23,6 +23,10 @@ public:
     void setValue(const char* value, uint64_t size) override;
     bytebuffer getValue() override;
     void print(std::ostream& output) override;
+    bool operator< (const TypedValue<T>& val)
+    {
+        return _value < val._value;
+    }
 };
 
 template<>
@@ -33,6 +37,11 @@ public:
     void setValue(const char* value, uint64_t size) override;
     bytebuffer getValue() override;
     void print(std::ostream& output) override;
+    bool operator< (const TypedValue<StringType>& val)
+    {
+        return std::string(reinterpret_cast<char*>(this->_value._buffer), this->_value._size)
+                < std::string(reinterpret_cast<char*>(val._value._buffer), val._value._size);
+    }
 };
 
 template class TypedValue<UInt8Type>;

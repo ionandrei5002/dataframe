@@ -2,11 +2,13 @@
 #include <fstream>
 #include <vector>
 #include <algorithm>
+#include <functional>
 
 #include "types.h"
 #include "bytebuffer.h"
 #include "column.h"
 #include "value.h"
+#include "comparator.h"
 
 using namespace std;
 
@@ -18,8 +20,10 @@ int main()
     string line;
 
     vector<string> piece;
+    vector<uint32_t> sorting;
 
     vector<unique_ptr<Column>> columns;
+
     columns.push_back(Column::factory(Type::UINT8));
     columns.push_back(Column::factory(Type::INT8));
     columns.push_back(Column::factory(Type::UINT16));
@@ -32,6 +36,7 @@ int main()
     columns.push_back(Column::factory(Type::DOUBLE));
     columns.push_back(Column::factory(Type::STRING));
 
+    uint32_t counter = 0;
     while(getline(input, line))
     {
         split(piece, line, ';');
@@ -42,7 +47,25 @@ int main()
         }
 
         piece.clear();
+        sorting.push_back(counter);
+        counter++;
+//        if(counter == 100000)
+//            break;
     }
+
+    vector<unique_ptr<Comparator>> comparators;
+    {
+        comparators.push_back(make_unique<TypedComparator<UInt16Type>>(make_shared<TypedColumn<UInt16Type>>(columns[2])));
+
+        comparators.push_back(make_unique<TypedComparator<Int16Type>>(make_shared<TypedColumn<Int16Type>>(columns[3])));
+
+        comparators.push_back(make_unique<TypedComparator<UInt32Type>>(make_shared<TypedColumn<UInt32Type>>(columns[4])));
+
+        comparators.push_back(make_unique<TypedComparator<Int32Type>>(make_shared<TypedColumn<Int32Type>>(columns[5])));
+    }
+
+    for(auto it = comparators.begin(); it != comparators.end(); ++it)
+        sort(sorting.begin(), sorting.end(), (*it)->_sorter);
 
     input.close();
     uint64_t total = 0;
@@ -61,18 +84,20 @@ int main()
         cout << size << endl;
     }
 
-    uint64_t size = columns[0]->nb_elements;
-    for(uint64_t i = 0; i < size; i++)
     {
-        for(uint64_t j = 0; j < columns.size() - 1; j++)
+        uint64_t size = columns[0]->nb_elements;
+        for(uint64_t i = 0; i < size; i++)
         {
-            std::unique_ptr<Value> value = columns[j]->getValue(i);
-//            value->print(cout);
-//            cout << ",";
+            for(uint64_t j = 0; j < columns.size() - 1; j++)
+            {
+                std::unique_ptr<Value> value = columns[j]->getValue(i);
+                value->print(cout);
+                cout << ",";
+            }
+            std::unique_ptr<Value> value = columns[columns.size() - 1]->getValue(i);
+            value->print(cout);
+            cout << endl;
         }
-        std::unique_ptr<Value> value = columns[columns.size() - 1]->getValue(i);
-//        value->print(cout);
-//        cout << endl;
     }
 
     return 0;

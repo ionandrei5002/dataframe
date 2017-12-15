@@ -14,6 +14,7 @@ public:
     std::vector<uint64_t> _position;
     uint64_t nb_elements = 0;
 public:
+//    Column(){}
     virtual ~Column(){}
     static std::unique_ptr<Column> factory(Type::type type);
     virtual void putValue(std::unique_ptr<Value> value) = 0;
@@ -25,6 +26,14 @@ template<typename T>
 class TypedColumn: public Column
 {
 public:
+    TypedColumn(){}
+    TypedColumn(const std::unique_ptr<Column>& val)
+    {
+        _column = val->_column;
+        _position = val->_position;
+        nb_elements = val->nb_elements;
+    }
+
     void putValue(std::unique_ptr<Value> value) override;
     void putValue(const char* value, uint64_t size) override;
     std::unique_ptr<Value> getValue(size_t pos) override;
