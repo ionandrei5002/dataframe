@@ -13,7 +13,8 @@ public:
     virtual ~Value(){}
     virtual void setValue(const char* value, uint64_t size) = 0;
     virtual bytebuffer getValue() = 0;
-    virtual void print(std::ostream& output) = 0;
+    friend std::ostream& operator <<(std::ostream& output, const Value& val);
+    virtual void print(std::ostream& output) const = 0;
 };
 
 template<typename T>
@@ -23,7 +24,7 @@ private:
 public:
     void setValue(const char* value, uint64_t size) override;
     bytebuffer getValue() override;
-    void print(std::ostream& output) override;
+    void print(std::ostream& output) const override;
     bool operator <(const TypedValue<T>& val)
     {
         return _value < val._value;
@@ -45,7 +46,7 @@ private:
 public:
     void setValue(const char* value, uint64_t size) override;
     bytebuffer getValue() override;
-    void print(std::ostream& output) override;
+    void print(std::ostream& output) const override;
     bool operator <(const TypedValue<StringType>& val)
     {
         return std::experimental::string_view(reinterpret_cast<char*>(this->_value._buffer), this->_value._size)

@@ -1,12 +1,18 @@
 #include "value.h"
 
+std::ostream& operator <<(std::ostream& output, const Value& val)
+{
+    val.print(output);
+    return output;
+}
+
 template<typename T>
-void TypedValue<T>::print(std::ostream& output)
+void TypedValue<T>::print(std::ostream& output) const
 {
     output << _value;
 }
 
-void TypedValue<StringType>::print(std::ostream& output)
+void TypedValue<StringType>::print(std::ostream& output) const
 {
     output << _value;
 }

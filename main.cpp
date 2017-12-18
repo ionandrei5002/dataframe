@@ -126,12 +126,10 @@ int main()
             for(uint64_t j = 0; j < columns.size() - 1; j++)
             {
                 Value* value = columns[j]->getValue(sorting[i]);
-                value->print(out);
-                out << ",";
+                out << (*value) << ",";
             }
             Value* value = columns[columns.size() - 1]->getValue(sorting[i]);
-            value->print(out);
-            out << endl;
+            out << (*value) << endl;
         }
 
         end = chrono::high_resolution_clock::now();
