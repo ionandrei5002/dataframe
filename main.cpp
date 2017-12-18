@@ -18,7 +18,7 @@ int main()
 {
     chrono::time_point<std::chrono::high_resolution_clock> start, end;
 
-    fstream input("/home/andrei/Desktop/oldies/desktop4/waa_android.csv");
+    fstream input("/home/andrei/Desktop/data.csv");
     string line;
 
     vector<string> piece;
@@ -26,19 +26,29 @@ int main()
 
     vector<unique_ptr<Column>> columns;
 
+//    columns.push_back(Column::factory(Type::UINT16));
+//    columns.push_back(Column::factory(Type::INT16));
+//    columns.push_back(Column::factory(Type::UINT32));
+//    columns.push_back(Column::factory(Type::INT32));
+//    columns.push_back(Column::factory(Type::UINT32));
+//    columns.push_back(Column::factory(Type::INT32));
+//    columns.push_back(Column::factory(Type::UINT64));
+//    columns.push_back(Column::factory(Type::INT64));
+//    columns.push_back(Column::factory(Type::FLOAT));
+//    columns.push_back(Column::factory(Type::DOUBLE));
+    columns.push_back(Column::factory(Type::INT32));
+    columns.push_back(Column::factory(Type::INT32));
+    columns.push_back(Column::factory(Type::INT32));
+    columns.push_back(Column::factory(Type::INT32));
+    columns.push_back(Column::factory(Type::INT32));
+    columns.push_back(Column::factory(Type::INT32));
+    columns.push_back(Column::factory(Type::INT32));
+    columns.push_back(Column::factory(Type::INT32));
+    columns.push_back(Column::factory(Type::FLOAT));
+    columns.push_back(Column::factory(Type::DOUBLE));
     columns.push_back(Column::factory(Type::STRING));
-    columns.push_back(Column::factory(Type::STRING));
-    columns.push_back(Column::factory(Type::STRING));
-    columns.push_back(Column::factory(Type::STRING));
-    columns.push_back(Column::factory(Type::STRING));
-    columns.push_back(Column::factory(Type::STRING));
-    columns.push_back(Column::factory(Type::STRING));
-    columns.push_back(Column::factory(Type::STRING));
-    columns.push_back(Column::factory(Type::STRING));
-    columns.push_back(Column::factory(Type::STRING));
-    columns.push_back(Column::factory(Type::STRING));
-    columns.push_back(Column::factory(Type::STRING));
-    columns.push_back(Column::factory(Type::STRING));
+//    columns.push_back(Column::factory(Type::STRING));
+//    columns.push_back(Column::factory(Type::STRING));
 
     uint32_t counter = 0;
     {
@@ -46,7 +56,7 @@ int main()
 
         while(getline(input, line))
         {
-            split(piece, line, ',');
+            split(piece, line, ';');
             for(size_t i = 0; i < piece.size(); i++)
             {
                 string* value = &piece.at(i);
@@ -70,10 +80,10 @@ int main()
 
     vector<shared_ptr<Comparator>> comparators;
     {
-        comparators.push_back(make_shared<TypedComparator<StringType>>(make_shared<TypedColumn<StringType>>(columns[0])));
-        comparators.push_back(make_shared<TypedComparator<StringType>>(make_shared<TypedColumn<StringType>>(columns[1])));
-        comparators.push_back(make_shared<TypedComparator<StringType>>(make_shared<TypedColumn<StringType>>(columns[2])));
-        comparators.push_back(make_shared<TypedComparator<StringType>>(make_shared<TypedColumn<StringType>>(columns[3])));
+        comparators.push_back(make_shared<TypedComparator<Int32Type>>(make_shared<TypedColumn<Int32Type>>(columns[0])));
+//        comparators.push_back(make_shared<TypedComparator<Int32Type>>(make_shared<TypedColumn<Int32Type>>(columns[1])));
+//        comparators.push_back(make_shared<TypedComparator<Int32Type>>(make_shared<TypedColumn<Int32Type>>(columns[2])));
+//        comparators.push_back(make_shared<TypedComparator<Int32Type>>(make_shared<TypedColumn<Int32Type>>(columns[3])));
         comparators.push_back(make_shared<TypedComparator<StringType>>(make_shared<TypedColumn<StringType>>(columns[10])));
     }
 
@@ -115,11 +125,11 @@ int main()
         {
             for(uint64_t j = 0; j < columns.size() - 1; j++)
             {
-                unique_ptr<Value> value = columns[j]->getValue(sorting[i]);
+                Value* value = columns[j]->getValue(sorting[i]);
                 value->print(out);
                 out << ",";
             }
-            unique_ptr<Value> value = columns[columns.size() - 1]->getValue(sorting[i]);
+            Value* value = columns[columns.size() - 1]->getValue(sorting[i]);
             value->print(out);
             out << endl;
         }

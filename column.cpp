@@ -5,37 +5,37 @@ std::unique_ptr<Column> Column::factory(Type::type type)
     std::unique_ptr<Column> value;
     switch (type) {
     case Type::UINT8:
-        value = std::make_unique<TypedColumn<UInt8Type>>();
+        value = std::make_unique<TypedColumn<UInt8Type>>(TypedColumn<UInt8Type>());
         break;
     case Type::INT8:
-        value = std::make_unique<TypedColumn<Int8Type>>();
+        value = std::make_unique<TypedColumn<Int8Type>>(TypedColumn<Int8Type>());
         break;
     case Type::UINT16:
-        value = std::make_unique<TypedColumn<UInt16Type>>();
+        value = std::make_unique<TypedColumn<UInt16Type>>(TypedColumn<UInt16Type>());
         break;
     case Type::INT16:
-        value = std::make_unique<TypedColumn<Int16Type>>();
+        value = std::make_unique<TypedColumn<Int16Type>>(TypedColumn<Int16Type>());
         break;
     case Type::UINT32:
-        value = std::make_unique<TypedColumn<UInt32Type>>();
+        value = std::make_unique<TypedColumn<UInt32Type>>(TypedColumn<UInt32Type>());
         break;
     case Type::INT32:
-        value = std::make_unique<TypedColumn<Int32Type>>();
+        value = std::make_unique<TypedColumn<Int32Type>>(TypedColumn<Int32Type>());
         break;
     case Type::UINT64:
-        value = std::make_unique<TypedColumn<UInt64Type>>();
+        value = std::make_unique<TypedColumn<UInt64Type>>(TypedColumn<UInt64Type>());
         break;
     case Type::INT64:
-        value = std::make_unique<TypedColumn<UInt64Type>>();
+        value = std::make_unique<TypedColumn<UInt64Type>>(TypedColumn<UInt64Type>());
         break;
     case Type::FLOAT:
-        value = std::make_unique<TypedColumn<FloatType>>();
+        value = std::make_unique<TypedColumn<FloatType>>(TypedColumn<FloatType>());
         break;
     case Type::DOUBLE:
-        value = std::make_unique<TypedColumn<DoubleType>>();
+        value = std::make_unique<TypedColumn<DoubleType>>(TypedColumn<DoubleType>());
         break;
     case Type::STRING:
-        value = std::make_unique<TypedColumn<StringType>>();
+        value = std::make_unique<TypedColumn<StringType>>(TypedColumn<StringType>());
         break;
     default:
         value = nullptr;
@@ -46,9 +46,9 @@ std::unique_ptr<Column> Column::factory(Type::type type)
 }
 
 template<typename T>
-void TypedColumn<T>::putValue(std::unique_ptr<Value> value)
+void TypedColumn<T>::putValue(Value* value)
 {
-    TypedValue<T> _value = *reinterpret_cast<TypedValue<T>*>(value.get());
+    TypedValue<T> _value = *reinterpret_cast<TypedValue<T>*>(value);
     bytebuffer buffer = _value.getValue();
     for(uint64_t i = 0; i < buffer._size; i++)
         _column.push_back(buffer._buffer[i]);
@@ -138,54 +138,48 @@ void TypedColumn<DoubleType>::putValue(const char* value, uint64_t size)
 }
 
 template<typename T>
-std::unique_ptr<Value> TypedColumn<T>::getValue(size_t pos)
+Value* TypedColumn<T>::getValue(size_t pos)
 {
     typedef typename T::c_type type;
     uint64_t _size = sizeof(type);
 
     const char* _value_position = reinterpret_cast<char*>(&_column[pos * _size]);
 
-    TypedValue<T> value;
+    _typedvalue.setValue(_value_position, _size);
 
-    value.setValue(_value_position, _size);
-
-    return std::make_unique<TypedValue<T>>(value);
+    return &_typedvalue;
 }
 
 template<>
-std::unique_ptr<Value> TypedColumn<FloatType>::getValue(size_t pos)
+Value* TypedColumn<FloatType>::getValue(size_t pos)
 {
     typedef typename FloatType::c_type type;
     uint64_t _size = sizeof(type);
 
     const char* _value_position = reinterpret_cast<char*>(&_column[pos * _size]);
 
-    TypedValue<FloatType> value;
+    _typedvalue.setValue(_value_position, _size);
 
-    value.setValue(_value_position, _size);
-
-    return std::make_unique<TypedValue<FloatType>>(value);
+    return &_typedvalue;
 }
 
 template<>
-std::unique_ptr<Value> TypedColumn<DoubleType>::getValue(size_t pos)
+Value* TypedColumn<DoubleType>::getValue(size_t pos)
 {
     typedef typename DoubleType::c_type type;
     uint64_t _size = sizeof(type);
 
     const char* _value_position = reinterpret_cast<char*>(&_column[pos * _size]);
 
-    TypedValue<DoubleType> value;
+    _typedvalue.setValue(_value_position, _size);
 
-    value.setValue(_value_position, _size);
-
-    return std::make_unique<TypedValue<DoubleType>>(value);
+    return &_typedvalue;
 }
 
 template<>
-void TypedColumn<StringType>::putValue(std::unique_ptr<Value> value)
+void TypedColumn<StringType>::putValue(Value* value)
 {
-    TypedValue<StringType> _value = *reinterpret_cast<TypedValue<StringType>*>(value.get());
+    TypedValue<StringType> _value = *reinterpret_cast<TypedValue<StringType>*>(value);
     bytebuffer buffer = _value.getValue();
     uint8_t* size = reinterpret_cast<uint8_t*>(&buffer._size);
 
@@ -222,12 +216,13 @@ void TypedColumn<StringType>::putValue(const char* value, uint64_t size)
 }
 
 template<>
-std::unique_ptr<Value> TypedColumn<StringType>::getValue(size_t pos)
+Value* TypedColumn<StringType>::getValue(size_t pos)
 {
     uint64_t buffer_position = _position[pos];
     uint64_t _size = *reinterpret_cast<uint64_t*>(&_column[buffer_position]);
     const char* _value_position = reinterpret_cast<char*>(&_column[buffer_position + sizeof(_size)]);
-    TypedValue<StringType> value;
-    value.setValue(_value_position, _size);
-    return std::make_unique<TypedValue<StringType>>(value);
+
+    _typedvalue.setValue(_value_position, _size);
+
+    return &_typedvalue;
 }
