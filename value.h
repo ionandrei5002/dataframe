@@ -2,6 +2,7 @@
 #define VALUE_H
 
 #include <memory>
+#include <experimental/string_view>
 
 #include "types.h"
 #include "bytebuffer.h"
@@ -23,9 +24,17 @@ public:
     void setValue(const char* value, uint64_t size) override;
     bytebuffer getValue() override;
     void print(std::ostream& output) override;
-    bool operator< (const TypedValue<T>& val)
+    bool operator <(const TypedValue<T>& val)
     {
         return _value < val._value;
+    }
+    bool operator ==(const TypedValue<T>& val)
+    {
+        return !(_value < val._value) && !(val._value < _value);
+    }
+    bool operator !=(const TypedValue<T>& val)
+    {
+        return !this->operator ==(val);
     }
 };
 
@@ -37,10 +46,19 @@ public:
     void setValue(const char* value, uint64_t size) override;
     bytebuffer getValue() override;
     void print(std::ostream& output) override;
-    bool operator< (const TypedValue<StringType>& val)
+    bool operator <(const TypedValue<StringType>& val)
     {
-        return std::string(reinterpret_cast<char*>(this->_value._buffer), this->_value._size)
-                < std::string(reinterpret_cast<char*>(val._value._buffer), val._value._size);
+        return std::experimental::string_view(reinterpret_cast<char*>(this->_value._buffer), this->_value._size)
+                < std::experimental::string_view(reinterpret_cast<char*>(val._value._buffer), val._value._size);
+    }
+    bool operator ==(const TypedValue<StringType>& val)
+    {
+        return std::experimental::string_view(reinterpret_cast<char*>(this->_value._buffer), this->_value._size)
+                == std::experimental::string_view(reinterpret_cast<char*>(val._value._buffer), val._value._size);
+    }
+    bool operator !=(const TypedValue<StringType>& val)
+    {
+        return !this->operator ==(val);
     }
 };
 

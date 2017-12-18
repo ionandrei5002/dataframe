@@ -2,7 +2,7 @@
 #include <fstream>
 #include <vector>
 #include <algorithm>
-#include <functional>
+#include <chrono>
 
 #include "types.h"
 #include "bytebuffer.h"
@@ -16,7 +16,9 @@ void split(vector<string>& results, string const& original, char separator);
 
 int main()
 {
-    fstream input("/home/andrei/Desktop/data.csv");
+    chrono::time_point<std::chrono::high_resolution_clock> start, end;
+
+    fstream input("/home/andrei/Desktop/oldies/desktop4/waa_android.csv");
     string line;
 
     vector<string> piece;
@@ -24,48 +26,67 @@ int main()
 
     vector<unique_ptr<Column>> columns;
 
-    columns.push_back(Column::factory(Type::UINT8));
-    columns.push_back(Column::factory(Type::INT8));
-    columns.push_back(Column::factory(Type::UINT16));
-    columns.push_back(Column::factory(Type::INT16));
-    columns.push_back(Column::factory(Type::UINT32));
-    columns.push_back(Column::factory(Type::INT32));
-    columns.push_back(Column::factory(Type::UINT64));
-    columns.push_back(Column::factory(Type::INT64));
-    columns.push_back(Column::factory(Type::FLOAT));
-    columns.push_back(Column::factory(Type::DOUBLE));
+    columns.push_back(Column::factory(Type::STRING));
+    columns.push_back(Column::factory(Type::STRING));
+    columns.push_back(Column::factory(Type::STRING));
+    columns.push_back(Column::factory(Type::STRING));
+    columns.push_back(Column::factory(Type::STRING));
+    columns.push_back(Column::factory(Type::STRING));
+    columns.push_back(Column::factory(Type::STRING));
+    columns.push_back(Column::factory(Type::STRING));
+    columns.push_back(Column::factory(Type::STRING));
+    columns.push_back(Column::factory(Type::STRING));
+    columns.push_back(Column::factory(Type::STRING));
+    columns.push_back(Column::factory(Type::STRING));
     columns.push_back(Column::factory(Type::STRING));
 
     uint32_t counter = 0;
-    while(getline(input, line))
     {
-        split(piece, line, ';');
-        for(size_t i = 0; i < piece.size(); i++)
+        start = chrono::high_resolution_clock::now();
+
+        while(getline(input, line))
         {
-            string* value = &piece.at(i);
-            columns.at(i)->putValue(value->data(), value->size());
+            split(piece, line, ',');
+            for(size_t i = 0; i < piece.size(); i++)
+            {
+                string* value = &piece.at(i);
+                columns.at(i)->putValue(value->data(), value->size());
+            }
+
+            piece.clear();
+            sorting.push_back(counter);
+            counter++;
+//            if (counter == 100000)
+//            {
+//                break;
+//            }
         }
 
-        piece.clear();
-        sorting.push_back(counter);
-        counter++;
-//        if(counter == 100000)
-//            break;
+        end = chrono::high_resolution_clock::now();
+        chrono::duration<double> elapsed_time = end - start;
+
+        cout << "read duration = " << elapsed_time.count() << "s" << std::endl;
     }
 
-    vector<unique_ptr<Comparator>> comparators;
+    vector<shared_ptr<Comparator>> comparators;
     {
-        comparators.push_back(make_unique<TypedComparator<UInt16Type>>(make_shared<TypedColumn<UInt16Type>>(columns[2])));
-
-        comparators.push_back(make_unique<TypedComparator<Int16Type>>(make_shared<TypedColumn<Int16Type>>(columns[3])));
-
-        comparators.push_back(make_unique<TypedComparator<UInt32Type>>(make_shared<TypedColumn<UInt32Type>>(columns[4])));
-
-        comparators.push_back(make_unique<TypedComparator<Int32Type>>(make_shared<TypedColumn<Int32Type>>(columns[5])));
+        comparators.push_back(make_shared<TypedComparator<StringType>>(make_shared<TypedColumn<StringType>>(columns[0])));
+        comparators.push_back(make_shared<TypedComparator<StringType>>(make_shared<TypedColumn<StringType>>(columns[1])));
+        comparators.push_back(make_shared<TypedComparator<StringType>>(make_shared<TypedColumn<StringType>>(columns[2])));
+        comparators.push_back(make_shared<TypedComparator<StringType>>(make_shared<TypedColumn<StringType>>(columns[3])));
+        comparators.push_back(make_shared<TypedComparator<StringType>>(make_shared<TypedColumn<StringType>>(columns[10])));
     }
 
-    for(auto it = comparators.begin(); it != comparators.end(); ++it)
-        sort(sorting.begin(), sorting.end(), (*it)->_sorter);
+    {
+        start = chrono::high_resolution_clock::now();
+
+        sort(sorting.begin(), sorting.end(), Sorter(comparators));
+
+        end = chrono::high_resolution_clock::now();
+        chrono::duration<double> elapsed_time = end - start;
+
+        cout << "sort duration = " << elapsed_time.count() << "s" << std::endl;
+    }
 
     input.close();
     uint64_t total = 0;
@@ -84,21 +105,32 @@ int main()
         cout << size << endl;
     }
 
+    ofstream out("/home/andrei/Desktop/sorted.csv");
+
     {
-        uint64_t size = columns[0]->nb_elements;
+        start = chrono::high_resolution_clock::now();
+
+        uint64_t size = sorting.size();
         for(uint64_t i = 0; i < size; i++)
         {
             for(uint64_t j = 0; j < columns.size() - 1; j++)
             {
-                std::unique_ptr<Value> value = columns[j]->getValue(i);
-                value->print(cout);
-                cout << ",";
+                unique_ptr<Value> value = columns[j]->getValue(sorting[i]);
+                value->print(out);
+                out << ",";
             }
-            std::unique_ptr<Value> value = columns[columns.size() - 1]->getValue(i);
-            value->print(cout);
-            cout << endl;
+            unique_ptr<Value> value = columns[columns.size() - 1]->getValue(sorting[i]);
+            value->print(out);
+            out << endl;
         }
+
+        end = chrono::high_resolution_clock::now();
+        chrono::duration<double> elapsed_time = end - start;
+
+        cout << "write duration = " << elapsed_time.count() << "s" << std::endl;
     }
+
+    out.close();
 
     return 0;
 }

@@ -13,6 +13,8 @@ public:
     Comparator(): _sorter(sort(this)){}
     virtual ~Comparator(){}
     virtual bool operator ()(const uint32_t first, const uint32_t second) = 0;
+    virtual bool equal(const uint32_t first, const uint32_t second) = 0;
+    virtual bool differit(const uint32_t first, const uint32_t second) = 0;
     struct sort
     {
         Comparator* _comp;
@@ -40,6 +42,30 @@ public:
         _column = val._column;
     }
     bool operator ()(const uint32_t first, const uint32_t second) override;
+    bool equal(const uint32_t first, const uint32_t second) override;
+    bool differit(const uint32_t first, const uint32_t second) override;
+};
+
+class Sorter
+{
+private:
+    std::vector<std::shared_ptr<Comparator>> _comparators;
+public:
+    Sorter(std::vector<std::shared_ptr<Comparator>>& comparators): _comparators(comparators){}
+    inline bool operator ()(const uint32_t first, const uint32_t second) {
+        bool _comp = false;
+
+        for(auto it = _comparators.begin(); it != _comparators.end(); ++it)
+        {
+            if ((*it)->differit(first, second))
+            {
+                 _comp = (*it)->_sorter.operator ()(first, second);
+                return _comp;
+            }
+        }
+
+        return _comp;
+    }
 };
 
 template class TypedComparator<UInt8Type>;

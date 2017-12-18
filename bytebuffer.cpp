@@ -6,23 +6,18 @@ bytebuffer::bytebuffer()
 bytebuffer::bytebuffer(uint64_t size)
 {
     _size = size;
-    _buffer = new uint8_t[_size]{0};
 }
 
 bytebuffer::bytebuffer(uint64_t size, uint8_t *buffer)
 {
     _size = size;
-    _buffer = new uint8_t[_size]{0};
-
-    std::memcpy(_buffer, buffer, _size);
+    _buffer = buffer;
 }
 
 bytebuffer::bytebuffer(const bytebuffer &ot)
 {
     _size = ot._size;
-    _buffer = new uint8_t[_size]{0};
-
-    std::memcpy(_buffer, ot._buffer, _size);
+    _buffer = ot._buffer;
 }
 
 bytebuffer::bytebuffer(bytebuffer &&ot)
@@ -37,9 +32,7 @@ bytebuffer::bytebuffer(bytebuffer &&ot)
 bytebuffer& bytebuffer::operator =(const bytebuffer& ot)
 {
     _size = ot._size;
-    _buffer = new uint8_t[_size]{0};
-
-    std::memcpy(_buffer, ot._buffer, _size);
+    _buffer = ot._buffer;
 
     return *this;
 }
@@ -57,7 +50,6 @@ bytebuffer& bytebuffer::operator =(bytebuffer&& ot)
 
 bytebuffer::~bytebuffer()
 {
-    delete[] _buffer;
     _buffer = nullptr;
     _size = 0;
 }
