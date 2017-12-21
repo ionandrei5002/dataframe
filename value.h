@@ -15,6 +15,7 @@ public:
     virtual bytebuffer getValue() = 0;
     friend std::ostream& operator <<(std::ostream& output, const Value& val);
     virtual void print(std::ostream& output) const = 0;
+    virtual bool differit(const Value* first, const Value* second) = 0;
 };
 
 template<typename T>
@@ -25,6 +26,10 @@ public:
     void setValue(const char* value, uint64_t size) override;
     bytebuffer getValue() override;
     void print(std::ostream& output) const override;
+    bool differit(const Value* first, const Value* second) override
+    {
+        return *const_cast<TypedValue<T>*>(reinterpret_cast<const TypedValue<T>*>(first)) != *reinterpret_cast<const TypedValue<T>*>(second);
+    }
     bool operator <(const TypedValue<T>& val)
     {
         return _value < val._value;
@@ -47,6 +52,10 @@ public:
     void setValue(const char* value, uint64_t size) override;
     bytebuffer getValue() override;
     void print(std::ostream& output) const override;
+    bool differit(const Value* first, const Value* second) override
+    {
+        return (*const_cast<TypedValue<StringType>*>(reinterpret_cast<const TypedValue<StringType>*>(first))) != (*reinterpret_cast<const TypedValue<StringType>*>(second));
+    }
     bool operator <(const TypedValue<StringType>& val)
     {
         return std::experimental::string_view(reinterpret_cast<char*>(this->_value._buffer), this->_value._size)

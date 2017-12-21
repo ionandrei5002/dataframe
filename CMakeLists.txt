@@ -3,8 +3,10 @@ cmake_minimum_required(VERSION 2.8)
 
 #set(CMAKE_VERBOSE_MAKEFILE ON)
 
-set(HEADERS types.h bytebuffer.h value.h column.h comparator.h)
-set(SOURCES ${HEADERS} main.cpp bytebuffer.cpp value.cpp column.cpp comparator.cpp)
+set(CMAKE_CXX_COMPILER g++-7)
+
+set(HEADERS types.h bytebuffer.h value.h column.h comparator.h groupby.h)
+set(SOURCES ${HEADERS} main.cpp bytebuffer.cpp value.cpp column.cpp comparator.cpp groupby.cpp)
 
 add_executable(${PROJECT_NAME} ${SOURCES})
 
