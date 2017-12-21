@@ -83,8 +83,8 @@ int main()
 
     vector<shared_ptr<Comparator>> comparators;
     {
-        comparators.push_back(make_shared<TypedComparator<Int32Type>>(make_shared<TypedColumn<Int32Type>>(columns[2])));
         comparators.push_back(make_shared<TypedComparator<Int32Type>>(make_shared<TypedColumn<Int32Type>>(columns[3])));
+        comparators.push_back(make_shared<TypedComparator<Int32Type>>(make_shared<TypedColumn<Int32Type>>(columns[4])));
     }
 
     {
@@ -139,13 +139,33 @@ int main()
     destination.push_back(Column::factory(Type::STRING));
     destination.push_back(Column::factory(Type::INT32));
 
-    vector<uint32_t> group;
-    group.push_back(2);
-    group.push_back(3);
+    vector<unique_ptr<ValueComparator>> group;
+    group.push_back(make_unique<TypedValueComparator<StringType>>(TypedValueComparator<StringType>()));
+    group.push_back(make_unique<TypedValueComparator<StringType>>(TypedValueComparator<StringType>()));
+    group.push_back(make_unique<TypedValueComparator<Int32Type>>(TypedValueComparator<Int32Type>()));
+    group.push_back(make_unique<TypedValueComparator<Int32Type>>(TypedValueComparator<Int32Type>()));
+    group.push_back(make_unique<TypedValueComparator<Int32Type>>(TypedValueComparator<Int32Type>()));
+    group.push_back(make_unique<TypedValueComparator<Int32Type>>(TypedValueComparator<Int32Type>()));
+    group.push_back(make_unique<TypedValueComparator<Int32Type>>(TypedValueComparator<Int32Type>()));
+    group.push_back(make_unique<TypedValueComparator<Int32Type>>(TypedValueComparator<Int32Type>()));
+    group.push_back(make_unique<TypedValueComparator<Int32Type>>(TypedValueComparator<Int32Type>()));
+    group.push_back(make_unique<TypedValueComparator<Int32Type>>(TypedValueComparator<Int32Type>()));
+    group.push_back(make_unique<TypedValueComparator<StringType>>(TypedValueComparator<StringType>()));
+    group.push_back(make_unique<TypedValueComparator<StringType>>(TypedValueComparator<StringType>()));
+    group.push_back(make_unique<TypedValueComparator<StringType>>(TypedValueComparator<StringType>()));
+    group.push_back(make_unique<TypedValueComparator<Int32Type>>(TypedValueComparator<Int32Type>()));
+    group.push_back(make_unique<TypedValueComparator<StringType>>(TypedValueComparator<StringType>()));
+    group.push_back(make_unique<TypedValueComparator<StringType>>(TypedValueComparator<StringType>()));
+    group.push_back(make_unique<TypedValueComparator<StringType>>(TypedValueComparator<StringType>()));
+    group.push_back(make_unique<TypedValueComparator<Int32Type>>(TypedValueComparator<Int32Type>()));
+
+    vector<uint32_t> cols;
+    cols.push_back(3);
+    cols.push_back(4);
 
     {
         start = chrono::high_resolution_clock::now();
-        GroupBy groupby(columns, destination, sorting, group);
+        GroupBy groupby(columns, destination, sorting, group, cols);
         groupby.run();
         end = chrono::high_resolution_clock::now();
         chrono::duration<double> elapsed_time = end - start;

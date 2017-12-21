@@ -59,12 +59,46 @@ public:
         {
             if ((*it)->differit(first, second))
             {
-                 _comp = (*it)->_sorter.operator ()(first, second);
+                _comp = (*it)->_sorter.operator ()(first, second);
                 return _comp;
             }
         }
 
         return _comp;
+    }
+};
+
+class ValueComparator {
+protected:
+    Value* this_value;
+public:
+    ValueComparator(Value* value):this_value(value){}
+    virtual ~ValueComparator(){this_value = nullptr;}
+    void setValue(Value* value)
+    {
+        this_value = value;
+    }
+    virtual bool operator <(const Value* value) = 0;
+    virtual bool operator ==(const Value* value) = 0;
+    virtual bool operator !=(const Value* value) = 0;
+};
+
+template<typename T>
+class TypedValueComparator: public ValueComparator {
+public:
+    TypedValueComparator():ValueComparator(nullptr){}
+    TypedValueComparator(Value* value):ValueComparator(value){}
+    bool operator <(const Value* value) override
+    {
+        return *reinterpret_cast<TypedValue<T>*>(this_value) < *reinterpret_cast<const TypedValue<T>*>(value);
+    }
+    bool operator ==(const Value* value) override
+    {
+        return *reinterpret_cast<TypedValue<T>*>(this_value) == *reinterpret_cast<const TypedValue<T>*>(value);
+    }
+    bool operator !=(const Value* value) override
+    {
+        return (*reinterpret_cast<TypedValue<T>*>(this_value)) != (*reinterpret_cast<const TypedValue<T>*>(value));
     }
 };
 

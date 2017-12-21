@@ -7,17 +7,20 @@ void GroupBy::run()
     {
         if (size == 0)
         {
-            for(uint64_t spos = 0; spos < _columns.size(); spos++)
+            for(uint64_t spos = 0; spos < _source.size(); spos++)
             {
-                _destination[spos]->putValue(_columns[spos]->getValue(pos));
+                _destination[spos]->putValue(_source[spos]->getValue(pos));
             }
             size++;
         } else {
             bool found = false;
 
-            for(uint32_t gpos : _group)
+            for(uint32_t gpos : _cols)
             {
-                if (_columns[gpos]->getValue(pos)->differit(_columns[gpos]->getValue(pos),_destination[gpos]->getValue(size - 1))) {
+                ValueComparator* comp = _group[gpos].get();
+                comp->setValue(_source[gpos]->getValue(pos));
+                if(comp->operator !=(_destination[gpos]->getValue(size - 1)) == true)
+                {
                     found = false;
                     break;
                 } else {
@@ -27,9 +30,9 @@ void GroupBy::run()
 
             if (found == false)
             {
-                for(uint64_t spos = 0; spos < _columns.size(); spos++)
+                for(uint64_t spos = 0; spos < _source.size(); spos++)
                 {
-                    _destination[spos]->putValue(_columns[spos]->getValue(pos));
+                    _destination[spos]->putValue(_source[spos]->getValue(pos));
                 }
                 size++;
             }
