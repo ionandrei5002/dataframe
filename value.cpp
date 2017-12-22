@@ -41,11 +41,21 @@ bytebuffer TypedValue<StringType>::getValue()
 template<typename T>
 void TypedValue<T>::setValue(const char *value, uint64_t size)
 {
-    char* addr_value = reinterpret_cast<char*>(&this->_value);
-    memcpy(addr_value, value, size);
+    *(&this->_value) = *value;
+}
+
+template<typename T>
+void TypedValue<T>::setValue(bytebuffer buff)
+{
+    *(&this->_value) = *buff._buffer;
 }
 
 void TypedValue<StringType>::setValue(const char *value, uint64_t size)
 {
     _value = std::move<bytebuffer>(bytebuffer(size, reinterpret_cast<uint8_t*>(const_cast<char*>(value))));
+}
+
+void TypedValue<StringType>::setValue(bytebuffer buff)
+{
+    _value = std::move<bytebuffer>(bytebuffer(buff));
 }

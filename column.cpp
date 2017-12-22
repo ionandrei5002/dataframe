@@ -26,7 +26,7 @@ std::unique_ptr<Column> Column::factory(Type::type type)
         value = std::make_unique<TypedColumn<UInt64Type>>(TypedColumn<UInt64Type>());
         break;
     case Type::INT64:
-        value = std::make_unique<TypedColumn<UInt64Type>>(TypedColumn<UInt64Type>());
+        value = std::make_unique<TypedColumn<Int64Type>>(TypedColumn<Int64Type>());
         break;
     case Type::FLOAT:
         value = std::make_unique<TypedColumn<FloatType>>(TypedColumn<FloatType>());
@@ -65,10 +65,18 @@ void TypedColumn<T>::putValue(const char* value, uint64_t size)
     const type num_val = static_cast<type>(std::stoi(val));
 
     TypedValue<T> _value;
-    _value.setValue(reinterpret_cast<const char*>(&num_val), sizeof(type));
+    _value.setValue(static_cast<char*>(&num_val), sizeof(num_val));
     bytebuffer buffer = _value.getValue();
     for(uint64_t i = 0; i < buffer._size; i++)
         _column.push_back(buffer._buffer[i]);
+
+    {
+        const char* _value_position = static_cast<char*>(&_column[nb_elements * sizeof(num_val)]);
+        const type valll = *static_cast<const type*>(_value_position);
+        if (valll < 0) {
+            std::cout << T::name << " " << valll << " " << num_val << std::endl;
+        }
+    }
 
     nb_elements++;
 }
@@ -145,31 +153,10 @@ Value* TypedColumn<T>::getValue(size_t pos)
 
     const char* _value_position = reinterpret_cast<char*>(&_column[pos * _size]);
 
-    _typedvalue.setValue(_value_position, _size);
-
-    return &_typedvalue;
-}
-
-template<>
-Value* TypedColumn<FloatType>::getValue(size_t pos)
-{
-    typedef typename FloatType::c_type type;
-    uint64_t _size = sizeof(type);
-
-    const char* _value_position = reinterpret_cast<char*>(&_column[pos * _size]);
-
-    _typedvalue.setValue(_value_position, _size);
-
-    return &_typedvalue;
-}
-
-template<>
-Value* TypedColumn<DoubleType>::getValue(size_t pos)
-{
-    typedef typename DoubleType::c_type type;
-    uint64_t _size = sizeof(type);
-
-    const char* _value_position = reinterpret_cast<char*>(&_column[pos * _size]);
+    //    type val = *reinterpret_cast<const type*>(_value_position);
+    //    if (val < 0) {
+    //        std::cout << T::name << " " << val << std::endl;
+    //    }
 
     _typedvalue.setValue(_value_position, _size);
 

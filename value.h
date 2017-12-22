@@ -12,6 +12,7 @@ class Value
 public:
     virtual ~Value(){}
     virtual void setValue(const char* value, uint64_t size) = 0;
+    virtual void setValue(bytebuffer buff) = 0;
     virtual bytebuffer getValue() = 0;
     friend std::ostream& operator <<(std::ostream& output, const Value& val);
     virtual void print(std::ostream& output) const = 0;
@@ -23,6 +24,7 @@ private:
     typename T::c_type _value;
 public:
     void setValue(const char* value, uint64_t size) override;
+    void setValue(bytebuffer buff) override;
     bytebuffer getValue() override;
     void print(std::ostream& output) const override;
     bool operator <(const TypedValue<T>& val)
@@ -45,6 +47,7 @@ private:
     StringType::c_type _value;
 public:
     void setValue(const char* value, uint64_t size) override;
+    void setValue(bytebuffer buff) override;
     bytebuffer getValue() override;
     void print(std::ostream& output) const override;
     bool operator <(const TypedValue<StringType>& val)

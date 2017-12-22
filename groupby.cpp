@@ -9,13 +9,19 @@ void GroupBy::run()
         {
             for(uint64_t spos = 0; spos < _source.size(); spos++)
             {
-                _destination[spos]->putValue(_source[spos]->getValue(pos));
+                Aggregator* agg = _aggregators[spos].get();
+
+                agg->input(_source[spos]->getValue(pos));
+
+                _destination[spos]->putValue(agg->output());
+
+                agg->reset();
             }
             size++;
         } else {
             bool found = false;
 
-            for(uint32_t gpos : _cols)
+            for(uint32_t gpos : _group_cols)
             {
                 ValueComparator* comp = _group[gpos].get();
                 comp->setValue(_source[gpos]->getValue(pos));
