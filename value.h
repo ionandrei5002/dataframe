@@ -22,6 +22,7 @@ template<typename T>
 class TypedValue: public Value {
 private:
     typename T::c_type _value;
+    typedef typename T::c_type type;
 public:
     void setValue(const char* value, uint64_t size) override;
     void setValue(bytebuffer buff) override;
@@ -45,6 +46,7 @@ template<>
 class TypedValue<StringType>: public Value {
 private:
     StringType::c_type _value;
+    typedef typename StringType::c_type type;
 public:
     void setValue(const char* value, uint64_t size) override;
     void setValue(bytebuffer buff) override;

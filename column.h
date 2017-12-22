@@ -10,7 +10,7 @@
 class Column
 {
 public:
-    std::vector<uint8_t> _column;
+    std::vector<char> _column;
     std::vector<uint64_t> _position;
     uint64_t nb_elements = 0;
 public:

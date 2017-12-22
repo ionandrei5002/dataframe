@@ -140,126 +140,126 @@ int main()
 
     out.close();
 
-//    vector<unique_ptr<Column>> destination;
+    vector<unique_ptr<Column>> destination;
 
-//    destination.push_back(Column::factory(Type::STRING));
-//    destination.push_back(Column::factory(Type::STRING));
-//    destination.push_back(Column::factory(Type::INT32));
-//    destination.push_back(Column::factory(Type::INT32));
-//    destination.push_back(Column::factory(Type::INT32));
-//    destination.push_back(Column::factory(Type::UINT64));
-//    destination.push_back(Column::factory(Type::INT32));
-//    destination.push_back(Column::factory(Type::INT32));
-//    destination.push_back(Column::factory(Type::INT32));
-//    destination.push_back(Column::factory(Type::INT32));
-//    destination.push_back(Column::factory(Type::STRING));
-//    destination.push_back(Column::factory(Type::STRING));
-//    destination.push_back(Column::factory(Type::STRING));
-//    destination.push_back(Column::factory(Type::INT32));
-//    destination.push_back(Column::factory(Type::STRING));
-//    destination.push_back(Column::factory(Type::STRING));
-//    destination.push_back(Column::factory(Type::STRING));
-//    destination.push_back(Column::factory(Type::INT32));
+    destination.push_back(Column::factory(Type::STRING));
+    destination.push_back(Column::factory(Type::STRING));
+    destination.push_back(Column::factory(Type::INT32));
+    destination.push_back(Column::factory(Type::INT32));
+    destination.push_back(Column::factory(Type::INT32));
+    destination.push_back(Column::factory(Type::UINT64));
+    destination.push_back(Column::factory(Type::INT32));
+    destination.push_back(Column::factory(Type::INT32));
+    destination.push_back(Column::factory(Type::INT32));
+    destination.push_back(Column::factory(Type::INT32));
+    destination.push_back(Column::factory(Type::STRING));
+    destination.push_back(Column::factory(Type::STRING));
+    destination.push_back(Column::factory(Type::STRING));
+    destination.push_back(Column::factory(Type::INT32));
+    destination.push_back(Column::factory(Type::STRING));
+    destination.push_back(Column::factory(Type::STRING));
+    destination.push_back(Column::factory(Type::STRING));
+    destination.push_back(Column::factory(Type::INT32));
 
-//    vector<unique_ptr<ValueComparator>> group;
-//    group.push_back(make_unique<TypedValueComparator<StringType>>(TypedValueComparator<StringType>()));
-//    group.push_back(make_unique<TypedValueComparator<StringType>>(TypedValueComparator<StringType>()));
-//    group.push_back(make_unique<TypedValueComparator<Int32Type>>(TypedValueComparator<Int32Type>()));
-//    group.push_back(make_unique<TypedValueComparator<Int32Type>>(TypedValueComparator<Int32Type>()));
-//    group.push_back(make_unique<TypedValueComparator<Int32Type>>(TypedValueComparator<Int32Type>()));
-//    group.push_back(make_unique<TypedValueComparator<Int32Type>>(TypedValueComparator<Int32Type>()));
-//    group.push_back(make_unique<TypedValueComparator<Int32Type>>(TypedValueComparator<Int32Type>()));
-//    group.push_back(make_unique<TypedValueComparator<Int32Type>>(TypedValueComparator<Int32Type>()));
-//    group.push_back(make_unique<TypedValueComparator<Int32Type>>(TypedValueComparator<Int32Type>()));
-//    group.push_back(make_unique<TypedValueComparator<Int32Type>>(TypedValueComparator<Int32Type>()));
-//    group.push_back(make_unique<TypedValueComparator<StringType>>(TypedValueComparator<StringType>()));
-//    group.push_back(make_unique<TypedValueComparator<StringType>>(TypedValueComparator<StringType>()));
-//    group.push_back(make_unique<TypedValueComparator<StringType>>(TypedValueComparator<StringType>()));
-//    group.push_back(make_unique<TypedValueComparator<Int32Type>>(TypedValueComparator<Int32Type>()));
-//    group.push_back(make_unique<TypedValueComparator<StringType>>(TypedValueComparator<StringType>()));
-//    group.push_back(make_unique<TypedValueComparator<StringType>>(TypedValueComparator<StringType>()));
-//    group.push_back(make_unique<TypedValueComparator<StringType>>(TypedValueComparator<StringType>()));
-//    group.push_back(make_unique<TypedValueComparator<Int32Type>>(TypedValueComparator<Int32Type>()));
+    vector<unique_ptr<ValueComparator>> group;
+    group.push_back(make_unique<TypedValueComparator<StringType>>(TypedValueComparator<StringType>()));
+    group.push_back(make_unique<TypedValueComparator<StringType>>(TypedValueComparator<StringType>()));
+    group.push_back(make_unique<TypedValueComparator<Int32Type>>(TypedValueComparator<Int32Type>()));
+    group.push_back(make_unique<TypedValueComparator<Int32Type>>(TypedValueComparator<Int32Type>()));
+    group.push_back(make_unique<TypedValueComparator<Int32Type>>(TypedValueComparator<Int32Type>()));
+    group.push_back(make_unique<TypedValueComparator<Int32Type>>(TypedValueComparator<Int32Type>()));
+    group.push_back(make_unique<TypedValueComparator<Int32Type>>(TypedValueComparator<Int32Type>()));
+    group.push_back(make_unique<TypedValueComparator<Int32Type>>(TypedValueComparator<Int32Type>()));
+    group.push_back(make_unique<TypedValueComparator<Int32Type>>(TypedValueComparator<Int32Type>()));
+    group.push_back(make_unique<TypedValueComparator<Int32Type>>(TypedValueComparator<Int32Type>()));
+    group.push_back(make_unique<TypedValueComparator<StringType>>(TypedValueComparator<StringType>()));
+    group.push_back(make_unique<TypedValueComparator<StringType>>(TypedValueComparator<StringType>()));
+    group.push_back(make_unique<TypedValueComparator<StringType>>(TypedValueComparator<StringType>()));
+    group.push_back(make_unique<TypedValueComparator<Int32Type>>(TypedValueComparator<Int32Type>()));
+    group.push_back(make_unique<TypedValueComparator<StringType>>(TypedValueComparator<StringType>()));
+    group.push_back(make_unique<TypedValueComparator<StringType>>(TypedValueComparator<StringType>()));
+    group.push_back(make_unique<TypedValueComparator<StringType>>(TypedValueComparator<StringType>()));
+    group.push_back(make_unique<TypedValueComparator<Int32Type>>(TypedValueComparator<Int32Type>()));
 
-//    vector<uint32_t> group_cols;
-//    group_cols.push_back(3);
-//    group_cols.push_back(4);
+    vector<uint32_t> group_cols;
+    group_cols.push_back(3);
+    group_cols.push_back(4);
 
-//    vector<unique_ptr<Aggregator>> aggregators;
-//    aggregators.push_back(make_unique<None<StringType>>(None<StringType>()));
-//    aggregators.push_back(make_unique<None<StringType>>(None<StringType>()));
-//    aggregators.push_back(make_unique<None<Int32Type>>(None<Int32Type>()));
-//    aggregators.push_back(make_unique<None<Int32Type>>(None<Int32Type>()));
-//    aggregators.push_back(make_unique<None<Int32Type>>(None<Int32Type>()));
-//    aggregators.push_back(make_unique<Sum<Int32Type>>(Sum<Int32Type>()));
-//    aggregators.push_back(make_unique<None<Int32Type>>(None<Int32Type>()));
-//    aggregators.push_back(make_unique<None<Int32Type>>(None<Int32Type>()));
-//    aggregators.push_back(make_unique<None<Int32Type>>(None<Int32Type>()));
-//    aggregators.push_back(make_unique<None<Int32Type>>(None<Int32Type>()));
-//    aggregators.push_back(make_unique<None<StringType>>(None<StringType>()));
-//    aggregators.push_back(make_unique<None<StringType>>(None<StringType>()));
-//    aggregators.push_back(make_unique<None<StringType>>(None<StringType>()));
-//    aggregators.push_back(make_unique<None<Int32Type>>(None<Int32Type>()));
-//    aggregators.push_back(make_unique<None<StringType>>(None<StringType>()));
-//    aggregators.push_back(make_unique<None<StringType>>(None<StringType>()));
-//    aggregators.push_back(make_unique<None<StringType>>(None<StringType>()));
-//    aggregators.push_back(make_unique<None<Int32Type>>(None<Int32Type>()));
+    vector<unique_ptr<Aggregator>> aggregators;
+    aggregators.push_back(make_unique<None<StringType>>(None<StringType>()));
+    aggregators.push_back(make_unique<None<StringType>>(None<StringType>()));
+    aggregators.push_back(make_unique<None<Int32Type>>(None<Int32Type>()));
+    aggregators.push_back(make_unique<None<Int32Type>>(None<Int32Type>()));
+    aggregators.push_back(make_unique<None<Int32Type>>(None<Int32Type>()));
+    aggregators.push_back(make_unique<Sum<Int32Type>>(Sum<Int32Type>()));
+    aggregators.push_back(make_unique<None<Int32Type>>(None<Int32Type>()));
+    aggregators.push_back(make_unique<None<Int32Type>>(None<Int32Type>()));
+    aggregators.push_back(make_unique<None<Int32Type>>(None<Int32Type>()));
+    aggregators.push_back(make_unique<None<Int32Type>>(None<Int32Type>()));
+    aggregators.push_back(make_unique<None<StringType>>(None<StringType>()));
+    aggregators.push_back(make_unique<None<StringType>>(None<StringType>()));
+    aggregators.push_back(make_unique<None<StringType>>(None<StringType>()));
+    aggregators.push_back(make_unique<None<Int32Type>>(None<Int32Type>()));
+    aggregators.push_back(make_unique<None<StringType>>(None<StringType>()));
+    aggregators.push_back(make_unique<None<StringType>>(None<StringType>()));
+    aggregators.push_back(make_unique<None<StringType>>(None<StringType>()));
+    aggregators.push_back(make_unique<None<Int32Type>>(None<Int32Type>()));
 
-//    vector<uint32_t> agg_cols;
-//    agg_cols.push_back(5);
+    vector<uint32_t> agg_cols;
+    agg_cols.push_back(5);
 
-//    {
-//        start = chrono::high_resolution_clock::now();
-//        GroupBy groupby(columns, destination, sorting, group, group_cols, aggregators, agg_cols);
-//        groupby.run();
-//        end = chrono::high_resolution_clock::now();
-//        chrono::duration<double> elapsed_time = end - start;
+    {
+        start = chrono::high_resolution_clock::now();
+        GroupBy groupby(columns, destination, sorting, group, group_cols, aggregators, agg_cols);
+        groupby.run();
+        end = chrono::high_resolution_clock::now();
+        chrono::duration<double> elapsed_time = end - start;
 
-//        cout << "group duration = " << elapsed_time.count() << "s" << std::endl;
-//    }
+        cout << "group duration = " << elapsed_time.count() << "s" << std::endl;
+    }
 
-//    {
-//        uint64_t total = 0;
-//        for(uint64_t i = 0; i < destination.size(); i++)
-//        {
-//            uint64_t colsize = destination[i]->_column.size();
-//            uint64_t idxsize = destination[i]->_position.size() * 8;
-//            cout << i << " - " << colsize + idxsize << " byte" << endl;
-//            total += colsize + idxsize;
-//        }
-//        cout << "total size " << total << " bytes" << endl;
+    {
+        uint64_t total = 0;
+        for(uint64_t i = 0; i < destination.size(); i++)
+        {
+            uint64_t colsize = destination[i]->_column.size();
+            uint64_t idxsize = destination[i]->_position.size() * 8;
+            cout << i << " - " << colsize + idxsize << " byte" << endl;
+            total += colsize + idxsize;
+        }
+        cout << "total size " << total << " bytes" << endl;
 
-//        for(uint64_t i = 0; i < destination.size(); i++)
-//        {
-//            uint64_t size = destination[i]->nb_elements;
-//            cout << size << endl;
-//        }
-//    }
+        for(uint64_t i = 0; i < destination.size(); i++)
+        {
+            uint64_t size = destination[i]->nb_elements;
+            cout << size << endl;
+        }
+    }
 
-//    ofstream outgroup("/home/andrei/Desktop/group.csv");
+    ofstream outgroup("/home/andrei/Desktop/group.csv");
 
-//    {
-//        start = chrono::high_resolution_clock::now();
+    {
+        start = chrono::high_resolution_clock::now();
 
-//        uint64_t size = destination[0]->nb_elements;
-//        for(uint64_t i = 0; i < size; i++)
-//        {
-//            for(uint64_t j = 0; j < destination.size() - 1; j++)
-//            {
-//                Value* value = destination[j]->getValue(i);
-//                outgroup << (*value) << ",";
-//            }
-//            Value* value = destination[destination.size() - 1]->getValue(i);
-//            outgroup << (*value) << endl;
-//        }
+        uint64_t size = destination[0]->nb_elements;
+        for(uint64_t i = 0; i < size; i++)
+        {
+            for(uint64_t j = 0; j < destination.size() - 1; j++)
+            {
+                Value* value = destination[j]->getValue(i);
+                outgroup << (*value) << ",";
+            }
+            Value* value = destination[destination.size() - 1]->getValue(i);
+            outgroup << (*value) << endl;
+        }
 
-//        end = chrono::high_resolution_clock::now();
-//        chrono::duration<double> elapsed_time = end - start;
+        end = chrono::high_resolution_clock::now();
+        chrono::duration<double> elapsed_time = end - start;
 
-//        cout << "write group duration = " << elapsed_time.count() << "s" << std::endl;
-//    }
+        cout << "write group duration = " << elapsed_time.count() << "s" << std::endl;
+    }
 
-//    outgroup.close();
+    outgroup.close();
 
     return 0;
 }

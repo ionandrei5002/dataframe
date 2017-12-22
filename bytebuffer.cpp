@@ -8,7 +8,7 @@ bytebuffer::bytebuffer(uint64_t size)
     _size = size;
 }
 
-bytebuffer::bytebuffer(uint64_t size, uint8_t *buffer)
+bytebuffer::bytebuffer(uint64_t size, char *buffer)
 {
     _size = size;
     _buffer = buffer;

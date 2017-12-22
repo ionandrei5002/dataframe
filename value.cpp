@@ -21,7 +21,7 @@ template<typename T>
 bytebuffer TypedValue<T>::getValue()
 {
     uint64_t size = sizeof(_value);
-    uint8_t* _val = reinterpret_cast<uint8_t*>(&_value);
+    char* _val = reinterpret_cast<char*>(&_value);
 
     bytebuffer buffer(size, _val);
 
@@ -31,7 +31,7 @@ bytebuffer TypedValue<T>::getValue()
 bytebuffer TypedValue<StringType>::getValue()
 {
     uint64_t size = _value._size;
-    uint8_t* _val = _value._buffer;
+    char* _val = _value._buffer;
 
     bytebuffer buffer(size, _val);
 
@@ -41,18 +41,18 @@ bytebuffer TypedValue<StringType>::getValue()
 template<typename T>
 void TypedValue<T>::setValue(const char *value, uint64_t size)
 {
-    *(&this->_value) = *value;
+    this->_value = *reinterpret_cast<const type*>(value);
 }
 
 template<typename T>
 void TypedValue<T>::setValue(bytebuffer buff)
 {
-    *(&this->_value) = *buff._buffer;
+    this->_value = *reinterpret_cast<const type*>(buff._buffer);
 }
 
 void TypedValue<StringType>::setValue(const char *value, uint64_t size)
 {
-    _value = std::move<bytebuffer>(bytebuffer(size, reinterpret_cast<uint8_t*>(const_cast<char*>(value))));
+    _value = std::move<bytebuffer>(bytebuffer(size, const_cast<char*>(value)));
 }
 
 void TypedValue<StringType>::setValue(bytebuffer buff)

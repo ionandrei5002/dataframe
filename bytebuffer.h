@@ -9,11 +9,11 @@ class bytebuffer
 {
 public:
     uint64_t _size = 0;
-    uint8_t* _buffer = nullptr;
+    char* _buffer = nullptr;
 public:
     bytebuffer(); // default ctor
     bytebuffer(uint64_t size); // zero init ctor
-    bytebuffer(uint64_t size, uint8_t* buffer); // data copy init ctor
+    bytebuffer(uint64_t size, char* buffer); // data copy init ctor
     bytebuffer(const bytebuffer& ot); // copy ctor
     bytebuffer(bytebuffer&& ot); // move ctor
     bytebuffer& operator =(const bytebuffer& ot); // copy operator
