@@ -70,6 +70,9 @@ int main()
             piece.clear();
             sorting.push_back(counter);
             counter++;
+
+            if (counter == 100)
+                break;
         }
 
         end = chrono::high_resolution_clock::now();

@@ -41,6 +41,7 @@ class DistinctCounter: public Aggregator
 private:
     TypedValue<U> val;
     std::set<TypedValue<T>> set;
+    uint64_t setSize = 0;
 public:
     void input(const Value* input) override
     {
@@ -49,7 +50,7 @@ public:
     }
     Value* output() override
     {
-        uint64_t setSize = set.size();
+        setSize = set.size();
         uint64_t typeSize = sizeof(setSize);
         val.setValue(reinterpret_cast<const char*>(&setSize), typeSize);
 
@@ -57,6 +58,7 @@ public:
     }
     void reset()
     {
+        setSize = 0;
         set.clear();
     }
 };
@@ -67,6 +69,7 @@ class DistinctCounter<StringType, UInt64Type>: public Aggregator
 private:
     TypedValue<UInt64Type> val;
     std::set<std::string> set;
+    uint64_t setSize = 0;
 public:
     void input(const Value* input) override
     {
@@ -75,7 +78,7 @@ public:
     }
     Value* output() override
     {
-        uint64_t setSize = set.size();
+        setSize = set.size();
         uint64_t typeSize = sizeof(uint64_t);
         val.setValue(reinterpret_cast<const char*>(&setSize), typeSize);
 
@@ -83,6 +86,7 @@ public:
     }
     void reset()
     {
+        setSize = 0;
         set.clear();
     }
 };

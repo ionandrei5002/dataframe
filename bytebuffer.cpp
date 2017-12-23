@@ -1,7 +1,10 @@
 #include "bytebuffer.h"
 
 bytebuffer::bytebuffer()
-{}
+{
+    _size = 0;
+    _buffer = nullptr;
+}
 
 bytebuffer::bytebuffer(uint64_t size)
 {

@@ -24,6 +24,10 @@ private:
     typename T::c_type _value;
     typedef typename T::c_type type;
 public:
+    TypedValue()
+    {
+        _value = 0;
+    }
     void setValue(const char* value, uint64_t size) override;
     void setValue(bytebuffer buff) override;
     bytebuffer getValue() override;

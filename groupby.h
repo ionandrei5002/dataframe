@@ -27,6 +27,12 @@ public:
             std::vector<uint32_t>& group_cols,
             std::vector<std::unique_ptr<Aggregator>>& aggregators
             ):_source(columns), _destination(destination),_sorting(sorting),_group(group),_group_cols(group_cols),_aggregators(aggregators) {}
+    ~GroupBy() {
+        for(Value* it : _helper)
+        {
+            delete it;
+        }
+    }
     void run();
     void helper();
 };
