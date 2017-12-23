@@ -25,7 +25,7 @@ template<typename T>
 class TypedColumn: public Column
 {
 public:
-    TypedValue<T> _typedvalue;
+    TypedValue<T> _typedvalue = TypedValue<T>();
     TypedColumn(){}
     TypedColumn(const std::unique_ptr<Column>& val)
     {

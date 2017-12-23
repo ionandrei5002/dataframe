@@ -44,8 +44,8 @@ private:
 public:
     void input(const Value* input) override
     {
-        const TypedValue<T> inputValue = *static_cast<const TypedValue<T>*>(input);
-        set.insert(inputValue);
+        const TypedValue<T>* inputValue = static_cast<const TypedValue<T>*>(input);
+        set.insert(*inputValue);
     }
     Value* output() override
     {
@@ -70,8 +70,8 @@ private:
 public:
     void input(const Value* input) override
     {
-        TypedValue<StringType> inputValue = *static_cast<TypedValue<StringType>*>(const_cast<Value*>(input));
-        set.insert(std::string(inputValue.getValue()._buffer, inputValue.getValue()._size));
+        TypedValue<StringType>* inputValue = static_cast<TypedValue<StringType>*>(const_cast<Value*>(input));
+        set.insert(std::string(inputValue->getValue()._buffer, inputValue->getValue()._size));
     }
     Value* output() override
     {
@@ -96,8 +96,8 @@ private:
 public:
     void input(const Value* input) override
     {
-        TypedValue<T> inputValue = *reinterpret_cast<const TypedValue<T>*>(input);
-        sum += *reinterpret_cast<uint64_t*>(inputValue.getValue()._buffer);
+        TypedValue<T>* inputValue = reinterpret_cast<TypedValue<T>*>(const_cast<Value*>(input));
+        sum += *reinterpret_cast<uint64_t*>(inputValue->getValue()._buffer);
     }
     Value* output() override
     {
