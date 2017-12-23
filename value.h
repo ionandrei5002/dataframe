@@ -32,6 +32,10 @@ public:
     {
         return _value < val._value;
     }
+    friend bool operator <(const TypedValue<T>& lv, const TypedValue<T>& rv)
+    {
+        return lv._value < rv._value;
+    }
     bool operator ==(const TypedValue<T>& val)
     {
         return !(_value < val._value) && !(val._value < _value);
@@ -56,6 +60,11 @@ public:
     {
         return std::experimental::string_view(reinterpret_cast<char*>(this->_value._buffer), this->_value._size)
                 < std::experimental::string_view(reinterpret_cast<char*>(val._value._buffer), val._value._size);
+    }
+    friend bool operator <(const TypedValue<StringType>& lv, const TypedValue<StringType>& rv)
+    {
+        return std::experimental::string_view(reinterpret_cast<char*>(lv._value._buffer), lv._value._size)
+                < std::experimental::string_view(reinterpret_cast<char*>(rv._value._buffer), rv._value._size);
     }
     bool operator ==(const TypedValue<StringType>& val)
     {

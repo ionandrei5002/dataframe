@@ -158,7 +158,7 @@ int main()
     destination.push_back(Column::factory(Type::INT32));
     destination.push_back(Column::factory(Type::STRING));
     destination.push_back(Column::factory(Type::STRING));
-    destination.push_back(Column::factory(Type::STRING));
+    destination.push_back(Column::factory(Type::UINT64));
     destination.push_back(Column::factory(Type::INT32));
 
     vector<unique_ptr<ValueComparator>> group;
@@ -192,8 +192,8 @@ int main()
     aggregators.push_back(make_unique<None<Int32Type>>(None<Int32Type>()));
     aggregators.push_back(make_unique<None<Int32Type>>(None<Int32Type>()));
     aggregators.push_back(make_unique<Sum<Int32Type>>(Sum<Int32Type>()));
-    aggregators.push_back(make_unique<None<Int32Type>>(None<Int32Type>()));
-    aggregators.push_back(make_unique<None<Int32Type>>(None<Int32Type>()));
+    aggregators.push_back(make_unique<Sum<Int32Type>>(Sum<Int32Type>()));
+    aggregators.push_back(make_unique<DistinctCounter<Int32Type>>(DistinctCounter<Int32Type>()));
     aggregators.push_back(make_unique<None<Int32Type>>(None<Int32Type>()));
     aggregators.push_back(make_unique<None<Int32Type>>(None<Int32Type>()));
     aggregators.push_back(make_unique<None<StringType>>(None<StringType>()));
@@ -202,15 +202,12 @@ int main()
     aggregators.push_back(make_unique<None<Int32Type>>(None<Int32Type>()));
     aggregators.push_back(make_unique<None<StringType>>(None<StringType>()));
     aggregators.push_back(make_unique<None<StringType>>(None<StringType>()));
-    aggregators.push_back(make_unique<None<StringType>>(None<StringType>()));
+    aggregators.push_back(make_unique<DistinctCounter<StringType>>(DistinctCounter<StringType>()));
     aggregators.push_back(make_unique<None<Int32Type>>(None<Int32Type>()));
-
-    vector<uint32_t> agg_cols;
-    agg_cols.push_back(5);
 
     {
         start = chrono::high_resolution_clock::now();
-        GroupBy groupby(columns, destination, sorting, group, group_cols, aggregators, agg_cols);
+        GroupBy groupby(columns, destination, sorting, group, group_cols, aggregators);
         groupby.run();
         end = chrono::high_resolution_clock::now();
         chrono::duration<double> elapsed_time = end - start;

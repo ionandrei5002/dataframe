@@ -52,10 +52,10 @@ void TypedValue<T>::setValue(bytebuffer buff)
 
 void TypedValue<StringType>::setValue(const char *value, uint64_t size)
 {
-    _value = std::move<bytebuffer>(bytebuffer(size, const_cast<char*>(value)));
+    _value = bytebuffer(size, const_cast<char*>(value));
 }
 
 void TypedValue<StringType>::setValue(bytebuffer buff)
 {
-    _value = std::move<bytebuffer>(bytebuffer(buff));
+    _value = buff;
 }

@@ -28,7 +28,7 @@ public:
     }
     Value* output() override
     {
-        return reinterpret_cast<Value*>(&val);
+        return static_cast<Value*>(&val);
     }
     void reset() override
     {
@@ -44,7 +44,7 @@ private:
 public:
     void input(const Value* input) override
     {
-        TypedValue<T> inputValue = *reinterpret_cast<TypedValue<T>*>(input);
+        const TypedValue<T> inputValue = *static_cast<const TypedValue<T>*>(input);
         set.insert(inputValue);
     }
     Value* output() override
@@ -53,7 +53,33 @@ public:
         uint64_t typeSize = sizeof(setSize);
         val.setValue(reinterpret_cast<const char*>(&setSize), typeSize);
 
-        return reinterpret_cast<Value*>(&val);
+        return static_cast<Value*>(&val);
+    }
+    void reset()
+    {
+        set.clear();
+    }
+};
+
+template<>
+class DistinctCounter<StringType, UInt64Type>: public Aggregator
+{
+private:
+    TypedValue<UInt64Type> val;
+    std::set<std::string> set;
+public:
+    void input(const Value* input) override
+    {
+        TypedValue<StringType> inputValue = *static_cast<TypedValue<StringType>*>(const_cast<Value*>(input));
+        set.insert(std::string(inputValue.getValue()._buffer, inputValue.getValue()._size));
+    }
+    Value* output() override
+    {
+        uint64_t setSize = set.size();
+        uint64_t typeSize = sizeof(uint64_t);
+        val.setValue(reinterpret_cast<const char*>(&setSize), typeSize);
+
+        return static_cast<Value*>(&val);
     }
     void reset()
     {
