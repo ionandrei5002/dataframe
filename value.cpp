@@ -44,6 +44,12 @@ void TypedValue<T>::setValue(const char *value, uint64_t size)
     this->_value = *reinterpret_cast<const type*>(value);
 }
 
+template<>
+void TypedValue<UInt64Type>::setValue(const char *value, uint64_t size)
+{
+    this->_value = *reinterpret_cast<const type*>(value);
+}
+
 template<typename T>
 void TypedValue<T>::setValue(bytebuffer buff)
 {

@@ -71,8 +71,8 @@ int main()
             sorting.push_back(counter);
             counter++;
 
-            if (counter == 100)
-                break;
+//            if (counter == 100)
+//                break;
         }
 
         end = chrono::high_resolution_clock::now();
@@ -150,9 +150,9 @@ int main()
     destination.push_back(Column::factory(Type::INT32));
     destination.push_back(Column::factory(Type::INT32));
     destination.push_back(Column::factory(Type::INT32));
+    destination.push_back(Column::factory(Type::INT32));
+    destination.push_back(Column::factory(Type::INT32));
     destination.push_back(Column::factory(Type::UINT64));
-    destination.push_back(Column::factory(Type::INT32));
-    destination.push_back(Column::factory(Type::INT32));
     destination.push_back(Column::factory(Type::INT32));
     destination.push_back(Column::factory(Type::INT32));
     destination.push_back(Column::factory(Type::STRING));

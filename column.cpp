@@ -49,7 +49,20 @@ template<typename T>
 void TypedColumn<T>::putValue(Value* value)
 {
     TypedValue<T> _value = *reinterpret_cast<TypedValue<T>*>(value);
+
     bytebuffer buffer = _value.getValue();
+    for(uint64_t i = 0; i < buffer._size; i++)
+        _column.push_back(buffer._buffer[i]);
+
+    nb_elements++;
+}
+
+template<>
+void TypedColumn<UInt64Type>::putValue(Value* value)
+{
+    TypedValue<UInt64Type>* _value = reinterpret_cast<TypedValue<UInt64Type>*>(value);
+
+    bytebuffer buffer = _value->getValue();
     for(uint64_t i = 0; i < buffer._size; i++)
         _column.push_back(buffer._buffer[i]);
 

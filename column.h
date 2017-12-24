@@ -33,16 +33,15 @@ class TypedColumn: public Column
 private:
     TypedValue<T> _typedvalue;
 public:
-    TypedColumn(){
+    TypedColumn():_typedvalue(TypedValue<T>()){
         Column::Column();
     }
-    TypedColumn(const std::unique_ptr<Column>& val)
+    TypedColumn(const std::unique_ptr<Column>& val):_typedvalue(TypedValue<T>())
     {
         _column = val->_column;
         _position = val->_position;
         nb_elements = val->nb_elements;
     }
-
     void putValue(Value* value) override;
     void putValue(const char* value, uint64_t size) override;
     Value* getValue(size_t pos) override;

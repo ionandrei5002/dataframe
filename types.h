@@ -8,17 +8,17 @@ struct Type
 {
     enum type
     {
-        UINT8,
-        INT8,
-        UINT16,
-        INT16,
-        UINT32,
-        INT32,
-        UINT64,
-        INT64,
-        FLOAT,
-        DOUBLE,
-        STRING
+        UINT8 = 00,
+        INT8 = 10,
+        UINT16 = 20,
+        INT16 = 30,
+        UINT32 = 40,
+        INT32 = 50,
+        UINT64 = 60,
+        INT64 = 70,
+        FLOAT = 80,
+        DOUBLE = 90,
+        STRING = 100
     };
 };
 
