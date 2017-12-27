@@ -6,6 +6,16 @@
 
 #include "value.h"
 
+struct AggType
+{
+    enum type
+    {
+        NONE = 00,
+        SUM = 10,
+        DISTINCTC_COUNT = 20
+    };
+};
+
 class Aggregator
 {
 public:
@@ -15,6 +25,9 @@ public:
     virtual void reset() = 0;
     virtual Type::type inputType() = 0;
     virtual Type::type outputType() = 0;
+
+    template<typename T>
+    static std::unique_ptr<Aggregator> factory(AggType::type type);
 };
 
 template<typename T, typename U = T>
@@ -133,5 +146,40 @@ public:
     Type::type inputType() override { return _input_type; }
     Type::type outputType() override { return _output_type; }
 };
+
+template<typename T>
+std::unique_ptr<Aggregator> Aggregator::factory(AggType::type type)
+{
+    std::unique_ptr<Aggregator> value;
+
+    switch (type) {
+    case AggType::NONE:
+        value = std::make_unique<None<T>>(None<T>());
+        break;
+    case AggType::SUM:
+        value = std::make_unique<Sum<T>>(Sum<T>());
+        break;
+    case AggType::DISTINCTC_COUNT:
+        value = std::make_unique<DistinctCounter<T>>(DistinctCounter<T>());
+        break;
+    default:
+        value = nullptr;
+        break;
+    }
+
+    return value;
+}
+
+//template std::unique_ptr<Aggregator> Aggregator::factory<UInt8Type>(AggType::type);
+//template std::unique_ptr<Aggregator> Aggregator::factory<Int8Type>(AggType::type);
+//template std::unique_ptr<Aggregator> Aggregator::factory<UInt16Type>(AggType::type);
+//template std::unique_ptr<Aggregator> Aggregator::factory<Int16Type>(AggType::type);
+//template std::unique_ptr<Aggregator> Aggregator::factory<UInt32Type>(AggType::type);
+//template std::unique_ptr<Aggregator> Aggregator::factory<Int32Type>(AggType::type);
+//template std::unique_ptr<Aggregator> Aggregator::factory<UInt64Type>(AggType::type);
+//template std::unique_ptr<Aggregator> Aggregator::factory<Int64Type>(AggType::type);
+//template std::unique_ptr<Aggregator> Aggregator::factory<FloatType>(AggType::type);
+//template std::unique_ptr<Aggregator> Aggregator::factory<DoubleType>(AggType::type);
+//template std::unique_ptr<Aggregator> Aggregator::factory<StringType>(AggType::type);
 
 #endif // AGGREGATOR_H

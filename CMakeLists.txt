@@ -5,7 +5,7 @@ cmake_minimum_required(VERSION 2.8)
 
 set(CMAKE_CXX_COMPILER g++)
 
-set(HEADERS types.h bytebuffer.h value.h column.h comparator.h groupby.h aggregator.h)
+set(HEADERS types.h bytebuffer.h value.h column.h comparator.h groupby.h aggregator.h builder.h)
 set(SOURCES ${HEADERS} main.cpp bytebuffer.cpp value.cpp column.cpp comparator.cpp groupby.cpp aggregator.cpp)
 
 add_executable(${PROJECT_NAME} ${SOURCES})

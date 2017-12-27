@@ -12,6 +12,8 @@
 #include "groupby.h"
 #include "aggregator.h"
 
+#include "builder.h"
+
 using namespace std;
 
 void split(vector<string>& results, string const& original, char separator);
@@ -257,6 +259,15 @@ int main()
     }
 
     outgroup.close();
+
+    Builder builder(columns);
+    builder.applySortColumn(3).applySortColumn(4)
+            .applyGroupByColumn(3).applyGroupByColumn(4)
+            .applyAggregateColumn(5, AggType::SUM)
+            .applyAggregateColumn(6, AggType::SUM)
+            .applyAggregateColumn(7, AggType::DISTINCTC_COUNT)
+            .applyAggregateColumn(16, AggType::DISTINCTC_COUNT)
+            .run();
 
     return 0;
 }
