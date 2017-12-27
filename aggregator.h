@@ -13,6 +13,8 @@ public:
     virtual void input(const Value* input) = 0;
     virtual Value* output() = 0;
     virtual void reset() = 0;
+    virtual Type::type inputType() = 0;
+    virtual Type::type outputType() = 0;
 };
 
 template<typename T, typename U = T>
@@ -20,6 +22,8 @@ class None: public Aggregator
 {
 private:
     TypedValue<U> val;
+    Type::type _input_type = T::type_num;
+    Type::type _output_type = U::type_num;
 public:
     void input(const Value* input) override
     {
@@ -33,6 +37,8 @@ public:
     void reset() override
     {
     }
+    Type::type inputType() override { return _input_type; }
+    Type::type outputType() override { return _output_type; }
 };
 
 template<typename T, typename U = UInt64Type>
@@ -42,6 +48,8 @@ private:
     TypedValue<U> val;
     std::set<TypedValue<T>> set;
     uint64_t setSize = 0;
+    Type::type _input_type = T::type_num;
+    Type::type _output_type = U::type_num;
 public:
     void input(const Value* input) override
     {
@@ -61,6 +69,8 @@ public:
         setSize = 0;
         set.clear();
     }
+    Type::type inputType() override { return _input_type; }
+    Type::type outputType() override { return _output_type; }
 };
 
 template<>
@@ -70,6 +80,8 @@ private:
     TypedValue<UInt64Type> val;
     std::set<std::string> set;
     uint64_t setSize = 0;
+    Type::type _input_type = StringType::type_num;
+    Type::type _output_type = UInt64Type::type_num;
 public:
     void input(const Value* input) override
     {
@@ -89,6 +101,8 @@ public:
         setSize = 0;
         set.clear();
     }
+    Type::type inputType() override { return _input_type; }
+    Type::type outputType() override { return _output_type; }
 };
 
 template<typename T, typename U = UInt64Type>
@@ -97,6 +111,8 @@ class Sum: public Aggregator
 private:
     TypedValue<U> val;
     uint64_t sum = 0;
+    Type::type _input_type = T::type_num;
+    Type::type _output_type = UInt64Type::type_num;
 public:
     void input(const Value* input) override
     {
@@ -114,6 +130,8 @@ public:
     {
         sum = 0;
     }
+    Type::type inputType() override { return _input_type; }
+    Type::type outputType() override { return _output_type; }
 };
 
 #endif // AGGREGATOR_H

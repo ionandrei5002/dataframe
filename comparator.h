@@ -12,6 +12,7 @@ class Comparator
 public:
     Comparator(): _sorter(sort(this)){}
     virtual ~Comparator(){}
+    virtual Type::type getType() = 0;
     virtual bool operator ()(const uint32_t first, const uint32_t second) = 0;
     virtual bool equal(const uint32_t first, const uint32_t second) = 0;
     virtual bool differit(const uint32_t first, const uint32_t second) = 0;
@@ -30,6 +31,7 @@ template<typename T>
 class TypedComparator: public Comparator
 {
 private:
+    Type::type _type = T::type_num;
     std::shared_ptr<Column> _column;
 public:
     TypedComparator(std::shared_ptr<Column> column): _column(column)
@@ -41,6 +43,7 @@ public:
         _sorter = sort(this);
         _column = val._column;
     }
+    Type::type getType() override { return _type; }
     bool operator ()(const uint32_t first, const uint32_t second) override;
     bool equal(const uint32_t first, const uint32_t second) override;
     bool differit(const uint32_t first, const uint32_t second) override;
@@ -74,6 +77,7 @@ protected:
 public:
     ValueComparator(Value* value):this_value(value){}
     virtual ~ValueComparator(){this_value = nullptr;}
+    virtual Type::type getType() = 0;
     void setValue(Value* value)
     {
         this_value = value;
@@ -85,9 +89,12 @@ public:
 
 template<typename T>
 class TypedValueComparator: public ValueComparator {
+private:
+    Type::type _type = T::type_num;
 public:
     TypedValueComparator():ValueComparator(nullptr){}
     TypedValueComparator(Value* value):ValueComparator(value){}
+    Type::type getType() override { return _type; }
     bool operator <(const Value* value) override
     {
         return *reinterpret_cast<TypedValue<T>*>(this_value) < *reinterpret_cast<const TypedValue<T>*>(value);

@@ -25,6 +25,7 @@ public:
     virtual void putValue(Value* value) = 0;
     virtual void putValue(const char* value, uint64_t size) = 0;
     virtual Value* getValue(size_t pos) = 0;
+    virtual Type::type getType() = 0;
 };
 
 template<typename T>
@@ -32,6 +33,7 @@ class TypedColumn: public Column
 {
 private:
     TypedValue<T> _typedvalue;
+    Type::type _type = T::type_num;
 public:
     TypedColumn():_typedvalue(TypedValue<T>()){
         Column::Column();
@@ -42,6 +44,7 @@ public:
         _position = val->_position;
         nb_elements = val->nb_elements;
     }
+    Type::type getType() override { return _type; }
     void putValue(Value* value) override;
     void putValue(const char* value, uint64_t size) override;
     Value* getValue(size_t pos) override;
