@@ -15,10 +15,11 @@
 #include "builder.h"
 
 #include <csignal>
+#include <experimental/string_view>
 
 using namespace std;
 
-void split(vector<string>& results, string const& original, char separator);
+void split(vector<experimental::string_view>& results, string const& original, char separator);
 
 int main()
 {
@@ -26,8 +27,10 @@ int main()
 
     fstream input("/home/andrei/Desktop/dataset.csv");
     string line;
+    line.reserve(1024 * 1024);
 
-    vector<string> piece;
+    vector<experimental::string_view> piece;
+
     vector<uint32_t> sorting;
 
     vector<unique_ptr<Column>> columns;
@@ -51,6 +54,8 @@ int main()
     columns.push_back(Column::factory(Type::STRING));
     columns.push_back(Column::factory(Type::INT32));
 
+    piece.reserve(columns.size());
+
     uint32_t counter = 0;
     {
         start = chrono::high_resolution_clock::now();
@@ -62,7 +67,7 @@ int main()
             for(size_t i = 0; i < piece.size(); i++)
             {
                 try {
-                    string* value = &piece.at(i);
+                    experimental::string_view* value = &piece.at(i);
                     columns.at(i)->putValue(value->data(), value->size());
                 } catch(exception& ex)
                 {
@@ -134,7 +139,7 @@ int main()
     return 0;
 }
 
-void split(vector<string>& results, string const& original, char separator)
+void split(vector<experimental::string_view>& results, string const& original, char separator)
 {
     string::const_iterator start = original.begin();
     string::const_iterator end = original.end();
@@ -144,9 +149,9 @@ void split(vector<string>& results, string const& original, char separator)
         next = find(next + 1, end, separator);
     }
     while (next != end) {
+        experimental::string_view str(start.operator ->(), static_cast<uint64_t>(next.operator ->() - start.operator ->()));
+        results.push_back(str);
 
-        string str(start, next);
-        results.emplace_back(str);
         start = next + 1;
         next = find(start, end, separator);
         while(*start == '"' && *(next-1) != '"' && next != end)
@@ -154,6 +159,7 @@ void split(vector<string>& results, string const& original, char separator)
             next = find(next + 1, end, separator);
         }
     }
-    string str(start, next);
-    results.emplace_back(str);
+
+    experimental::string_view str(start.operator ->(), static_cast<uint64_t>(next.operator ->() - start.operator ->()));
+    results.push_back(str);
 }
