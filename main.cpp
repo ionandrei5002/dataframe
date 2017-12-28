@@ -14,6 +14,8 @@
 
 #include "builder.h"
 
+#include <csignal>
+
 using namespace std;
 
 void split(vector<string>& results, string const& original, char separator);
@@ -72,6 +74,8 @@ int main()
             piece.clear();
             sorting.push_back(counter);
             counter++;
+            if (counter == 10)
+                break;
         }
 
         end = chrono::high_resolution_clock::now();
@@ -80,194 +84,60 @@ int main()
         cout << "read duration = " << elapsed_time.count() << "s" << std::endl;
     }
 
-    vector<shared_ptr<Comparator>> comparators;
     {
-        comparators.push_back(make_shared<TypedComparator<Int32Type>>(make_shared<TypedColumn<Int32Type>>(columns[3])));
-        comparators.push_back(make_shared<TypedComparator<Int32Type>>(make_shared<TypedColumn<Int32Type>>(columns[4])));
-    }
+        vector<unique_ptr<Column>> dest;
+        Builder builder(columns);
+        dest = builder.applySortColumn(3).applySortColumn(4)
+                .applyGroupByColumn(3).applyGroupByColumn(4)
+                .applyAggregateColumn(5, AggType::SUM)
+                .applyAggregateColumn(6, AggType::SUM)
+                .applyAggregateColumn(7, AggType::DISTINCTC_COUNT)
+                .applyAggregateColumn(16, AggType::DISTINCTC_COUNT)
+                .run();
 
-    {
-        start = chrono::high_resolution_clock::now();
-
-        sort(sorting.begin(), sorting.end(), Sorter(comparators));
-
-        end = chrono::high_resolution_clock::now();
-        chrono::duration<double> elapsed_time = end - start;
-
-        cout << "sort duration = " << elapsed_time.count() << "s" << std::endl;
-    }
-
-    input.close();
-
-    {
-        uint64_t total = 0;
-        for(uint64_t i = 0; i < columns.size(); i++)
         {
-            uint64_t colsize = columns[i]->_column.size();
-            uint64_t idxsize = columns[i]->_position.size() * 8;
-            cout << i << " - " << colsize + idxsize << " byte" << endl;
-            total += colsize + idxsize;
-        }
-        cout << "total size " << total << " bytes" << endl;
-
-        for(uint64_t i = 0; i < columns.size(); i++)
-        {
-            uint64_t size = columns[i]->nb_elements;
-            cout << size << endl;
-        }
-    }
-
-    ofstream out("/home/andrei/Desktop/sorted.csv");
-
-    {
-        start = chrono::high_resolution_clock::now();
-
-        uint64_t size = sorting.size();
-        for(uint64_t i = 0; i < size; i++)
-        {
-            for(uint64_t j = 0; j < columns.size() - 1; j++)
+            uint64_t total = 0;
+            for(uint64_t i = 0; i < dest.size(); i++)
             {
-                Value* value = columns[j]->getValue(sorting[i]);
-                out << (*value) << ",";
+                uint64_t colsize = dest[i]->_column.size();
+                uint64_t idxsize = dest[i]->_position.size() * 8;
+                cout << i << " - " << colsize + idxsize << " byte" << endl;
+                total += colsize + idxsize;
             }
-            Value* value = columns[columns.size() - 1]->getValue(sorting[i]);
-            out << (*value) << endl;
-        }
+            cout << "total size " << total << " bytes" << endl;
 
-        end = chrono::high_resolution_clock::now();
-        chrono::duration<double> elapsed_time = end - start;
-
-        cout << "write sort duration = " << elapsed_time.count() << "s" << std::endl;
-    }
-
-    out.close();
-
-    vector<unique_ptr<Column>> destination;
-
-    destination.push_back(Column::factory(Type::STRING));
-    destination.push_back(Column::factory(Type::STRING));
-    destination.push_back(Column::factory(Type::INT32));
-    destination.push_back(Column::factory(Type::INT32));
-    destination.push_back(Column::factory(Type::INT32));
-    destination.push_back(Column::factory(Type::INT32));
-    destination.push_back(Column::factory(Type::INT32));
-    destination.push_back(Column::factory(Type::UINT64));
-    destination.push_back(Column::factory(Type::INT32));
-    destination.push_back(Column::factory(Type::INT32));
-    destination.push_back(Column::factory(Type::STRING));
-    destination.push_back(Column::factory(Type::STRING));
-    destination.push_back(Column::factory(Type::STRING));
-    destination.push_back(Column::factory(Type::INT32));
-    destination.push_back(Column::factory(Type::STRING));
-    destination.push_back(Column::factory(Type::STRING));
-    destination.push_back(Column::factory(Type::UINT64));
-    destination.push_back(Column::factory(Type::INT32));
-
-    vector<unique_ptr<ValueComparator>> group;
-    group.push_back(make_unique<TypedValueComparator<StringType>>(TypedValueComparator<StringType>()));
-    group.push_back(make_unique<TypedValueComparator<StringType>>(TypedValueComparator<StringType>()));
-    group.push_back(make_unique<TypedValueComparator<Int32Type>>(TypedValueComparator<Int32Type>()));
-    group.push_back(make_unique<TypedValueComparator<Int32Type>>(TypedValueComparator<Int32Type>()));
-    group.push_back(make_unique<TypedValueComparator<Int32Type>>(TypedValueComparator<Int32Type>()));
-    group.push_back(make_unique<TypedValueComparator<Int32Type>>(TypedValueComparator<Int32Type>()));
-    group.push_back(make_unique<TypedValueComparator<Int32Type>>(TypedValueComparator<Int32Type>()));
-    group.push_back(make_unique<TypedValueComparator<Int32Type>>(TypedValueComparator<Int32Type>()));
-    group.push_back(make_unique<TypedValueComparator<Int32Type>>(TypedValueComparator<Int32Type>()));
-    group.push_back(make_unique<TypedValueComparator<Int32Type>>(TypedValueComparator<Int32Type>()));
-    group.push_back(make_unique<TypedValueComparator<StringType>>(TypedValueComparator<StringType>()));
-    group.push_back(make_unique<TypedValueComparator<StringType>>(TypedValueComparator<StringType>()));
-    group.push_back(make_unique<TypedValueComparator<StringType>>(TypedValueComparator<StringType>()));
-    group.push_back(make_unique<TypedValueComparator<Int32Type>>(TypedValueComparator<Int32Type>()));
-    group.push_back(make_unique<TypedValueComparator<StringType>>(TypedValueComparator<StringType>()));
-    group.push_back(make_unique<TypedValueComparator<StringType>>(TypedValueComparator<StringType>()));
-    group.push_back(make_unique<TypedValueComparator<StringType>>(TypedValueComparator<StringType>()));
-    group.push_back(make_unique<TypedValueComparator<Int32Type>>(TypedValueComparator<Int32Type>()));
-
-    vector<uint32_t> group_cols;
-    group_cols.push_back(3);
-    group_cols.push_back(4);
-
-    vector<unique_ptr<Aggregator>> aggregators;
-    aggregators.push_back(make_unique<None<StringType>>(None<StringType>()));
-    aggregators.push_back(make_unique<None<StringType>>(None<StringType>()));
-    aggregators.push_back(make_unique<None<Int32Type>>(None<Int32Type>()));
-    aggregators.push_back(make_unique<None<Int32Type>>(None<Int32Type>()));
-    aggregators.push_back(make_unique<None<Int32Type>>(None<Int32Type>()));
-    aggregators.push_back(make_unique<Sum<Int32Type>>(Sum<Int32Type>()));
-    aggregators.push_back(make_unique<Sum<Int32Type>>(Sum<Int32Type>()));
-    aggregators.push_back(make_unique<DistinctCounter<Int32Type>>(DistinctCounter<Int32Type>()));
-    aggregators.push_back(make_unique<None<Int32Type>>(None<Int32Type>()));
-    aggregators.push_back(make_unique<None<Int32Type>>(None<Int32Type>()));
-    aggregators.push_back(make_unique<None<StringType>>(None<StringType>()));
-    aggregators.push_back(make_unique<None<StringType>>(None<StringType>()));
-    aggregators.push_back(make_unique<None<StringType>>(None<StringType>()));
-    aggregators.push_back(make_unique<None<Int32Type>>(None<Int32Type>()));
-    aggregators.push_back(make_unique<None<StringType>>(None<StringType>()));
-    aggregators.push_back(make_unique<None<StringType>>(None<StringType>()));
-    aggregators.push_back(make_unique<DistinctCounter<StringType>>(DistinctCounter<StringType>()));
-    aggregators.push_back(make_unique<None<Int32Type>>(None<Int32Type>()));
-
-    {
-        start = chrono::high_resolution_clock::now();
-        GroupBy groupby(columns, destination, sorting, group, group_cols, aggregators);
-        groupby.run();
-        end = chrono::high_resolution_clock::now();
-        chrono::duration<double> elapsed_time = end - start;
-
-        cout << "group duration = " << elapsed_time.count() << "s" << std::endl;
-    }
-
-    {
-        uint64_t total = 0;
-        for(uint64_t i = 0; i < destination.size(); i++)
-        {
-            uint64_t colsize = destination[i]->_column.size();
-            uint64_t idxsize = destination[i]->_position.size() * 8;
-            cout << i << " - " << colsize + idxsize << " byte" << endl;
-            total += colsize + idxsize;
-        }
-        cout << "total size " << total << " bytes" << endl;
-
-        for(uint64_t i = 0; i < destination.size(); i++)
-        {
-            uint64_t size = destination[i]->nb_elements;
-            cout << size << endl;
-        }
-    }
-
-    ofstream outgroup("/home/andrei/Desktop/group.csv");
-
-    {
-        start = chrono::high_resolution_clock::now();
-
-        uint64_t size = destination[0]->nb_elements;
-        for(uint64_t i = 0; i < size; i++)
-        {
-            for(uint64_t j = 0; j < destination.size() - 1; j++)
+            for(uint64_t i = 0; i < dest.size(); i++)
             {
-                Value* value = destination[j]->getValue(i);
-                outgroup << (*value) << ",";
+                uint64_t size = dest[i]->nb_elements;
+                cout << size << " " << dest[i]->getType() << endl;
             }
-            Value* value = destination[destination.size() - 1]->getValue(i);
-            outgroup << (*value) << endl;
         }
 
-        end = chrono::high_resolution_clock::now();
-        chrono::duration<double> elapsed_time = end - start;
+        ofstream outgroup("/home/andrei/Desktop/group.csv");
 
-        cout << "write group duration = " << elapsed_time.count() << "s" << std::endl;
+        {
+            start = chrono::high_resolution_clock::now();
+
+            uint64_t size = dest[0]->nb_elements;
+            for(uint64_t i = 0; i < size; i++)
+            {
+                for(uint64_t j = 0; j < dest.size() - 1; j++)
+                {
+                    Value* value = dest[j]->getValue(i);
+                    outgroup << (*value) << ",";
+                }
+                Value* value = dest[dest.size() - 1]->getValue(i);
+                outgroup << (*value) << endl;
+            }
+
+            end = chrono::high_resolution_clock::now();
+            chrono::duration<double> elapsed_time = end - start;
+
+            cout << "write group duration = " << elapsed_time.count() << "s" << std::endl;
+        }
+
+        outgroup.close();
     }
-
-    outgroup.close();
-
-    Builder builder(columns);
-    builder.applySortColumn(3).applySortColumn(4)
-            .applyGroupByColumn(3).applyGroupByColumn(4)
-            .applyAggregateColumn(5, AggType::SUM)
-            .applyAggregateColumn(6, AggType::SUM)
-            .applyAggregateColumn(7, AggType::DISTINCTC_COUNT)
-            .applyAggregateColumn(16, AggType::DISTINCTC_COUNT)
-            .run();
 
     return 0;
 }

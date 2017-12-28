@@ -1,31 +1,7 @@
 #include "groupby.h"
 
-void GroupBy::helper()
-{
-    _helper.push_back(new TypedValue<StringType>());
-    _helper.push_back(new TypedValue<StringType>());
-    _helper.push_back(new TypedValue<Int32Type>());
-    _helper.push_back(new TypedValue<Int32Type>());
-    _helper.push_back(new TypedValue<Int32Type>());
-    _helper.push_back(new TypedValue<Int32Type>());
-    _helper.push_back(new TypedValue<Int32Type>());
-    _helper.push_back(new TypedValue<Int32Type>());
-    _helper.push_back(new TypedValue<Int32Type>());
-    _helper.push_back(new TypedValue<Int32Type>());
-    _helper.push_back(new TypedValue<StringType>());
-    _helper.push_back(new TypedValue<StringType>());
-    _helper.push_back(new TypedValue<StringType>());
-    _helper.push_back(new TypedValue<Int32Type>());
-    _helper.push_back(new TypedValue<StringType>());
-    _helper.push_back(new TypedValue<StringType>());
-    _helper.push_back(new TypedValue<StringType>());
-    _helper.push_back(new TypedValue<Int32Type>());
-}
-
 void GroupBy::run()
 {
-    this->helper();
-
     uint64_t size = 0;
     bool found = false;
 
@@ -80,6 +56,8 @@ void GroupBy::run()
                     agg->input(_source[spos]->getValue(pos));
 
                     _helper[spos]->setValue(_source[spos]->getValue(pos)->getValue());
+
+                    std::cout << _helper[spos]->getType() << " " << _source[spos]->getType() << " " << _destination[spos]->getType() << std::endl;
                 }
                 size++;
             }

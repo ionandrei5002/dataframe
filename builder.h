@@ -23,12 +23,21 @@ private:
     std::vector<std::unique_ptr<ValueComparator>> _groupby;
     std::vector<uint32_t> _group_columns;
     std::vector<std::unique_ptr<Aggregator>> _aggregators;
-    std::vector<uint32_t> _agg_columns;
+    std::vector<Value*> _helper;
     std::shared_ptr<Comparator> comparatorMaker(Type::type type, std::unique_ptr<Column>& column);
     std::unique_ptr<ValueComparator> valueComparatorMaker(Type::type type);
     std::unique_ptr<Aggregator> aggregatorMaker(Type::type type, AggType::type agg_type);
+    void valueMaker(Type::type type);
 public:
-    Builder(std::vector<std::unique_ptr<Column>>& source):_source(source){}
+    Builder(std::vector<std::unique_ptr<Column>>& source):_source(source)
+    {
+        for(uint64_t i = 0; i < source.size(); i++)
+        {
+            Type::type operation_type = source[i]->getType();
+
+            _aggregators.push_back(aggregatorMaker(operation_type, AggType::NONE));
+        }
+    }
     Builder& applySortColumn(uint32_t column)
     {
         Type::type operation_type = _source[column]->getType();
@@ -47,16 +56,18 @@ public:
     {
         Type::type operation_type = _source[column]->getType();
 
-        _aggregators.push_back(aggregatorMaker(operation_type, type));
-
-        _agg_columns.push_back(column);
+        _aggregators[column] = aggregatorMaker(operation_type, type);
 
         return *this;
     }
-    void run()
+    std::vector<std::unique_ptr<Column>> run()
     {
         sort();
         buildDestination();
+        buildHelper();
+        groupby();
+
+        return std::move(this->_destination);
     }
 private:
     void sort()
@@ -82,18 +93,37 @@ private:
     {
         for(uint64_t i = 0; i < _source.size(); i++)
         {
-            if (_agg_columns.end() != std::find(_agg_columns.begin(), _agg_columns.end(), i))
-            {
-                _destination.push_back(Column::factory(_aggregators[i]->outputType()));
-            } else {
-                _destination.push_back(Column::factory(_source[i]->getType()));
-            }
+            _destination.push_back(Column::factory(_aggregators[i]->outputType()));
         }
 
-        for(uint64_t i = 0; i < _destination.size(); i++)
+        for(uint64_t i = 0; i < _source.size(); i++)
         {
-            std::cout << _destination[i]->getType() << std::endl;
+            _groupby.push_back(valueComparatorMaker(_source[i]->getType()));
         }
+    }
+
+    void buildHelper()
+    {
+        for(uint64_t i = 0; i < _source.size(); i++)
+        {
+            valueMaker(_source[i]->getType());
+        }
+    }
+
+    void groupby()
+    {
+        for(uint64_t i = 0; i < _source.size(); i++)
+        {
+            std::cout << i << " " << _source[i]->getType() << " " << _helper[i]->getType() << " " << _groupby[i]->getType() << " " << _aggregators[i]->outputType() << " " << _destination[i]->getType() << std::endl;
+        }
+
+        start = std::chrono::high_resolution_clock::now();
+        GroupBy groupby(_source, _destination, _sorting, _groupby, _group_columns, _aggregators, _helper);
+        groupby.run();
+        end = std::chrono::high_resolution_clock::now();
+        std::chrono::duration<double> elapsed_time = end - start;
+
+        std::cout << "group duration = " << elapsed_time.count() << "s" << std::endl;
     }
 };
 
@@ -231,6 +261,51 @@ std::unique_ptr<Aggregator> Builder::aggregatorMaker(Type::type type, AggType::t
     }
 
     return value;
+}
+
+void Builder::valueMaker(Type::type type)
+{
+    Value* value = nullptr;
+    switch (type) {
+    case Type::UINT8:
+        value = new TypedValue<UInt8Type>();
+        break;
+    case Type::INT8:
+        value = new TypedValue<Int8Type>();
+        break;
+    case Type::UINT16:
+        value = new TypedValue<UInt16Type>();
+        break;
+    case Type::INT16:
+        value = new TypedValue<Int16Type>();
+        break;
+    case Type::UINT32:
+        value = new TypedValue<UInt32Type>();
+        break;
+    case Type::INT32:
+        value = new TypedValue<Int32Type>();
+        break;
+    case Type::UINT64:
+        value = new TypedValue<UInt64Type>();
+        break;
+    case Type::INT64:
+        value = new TypedValue<Int64Type>();
+        break;
+    case Type::FLOAT:
+        value = new TypedValue<FloatType>();
+        break;
+    case Type::DOUBLE:
+        value = new TypedValue<DoubleType>();
+        break;
+    case Type::STRING:
+        value = new TypedValue<StringType>();
+        break;
+    default:
+        value = nullptr;
+        break;
+    }
+
+    _helper.push_back(value);
 }
 
 #endif // BUILDER_H

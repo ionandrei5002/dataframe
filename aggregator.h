@@ -34,7 +34,7 @@ template<typename T, typename U = T>
 class None: public Aggregator
 {
 private:
-    TypedValue<U> val;
+    TypedValue<U> val = TypedValue<U>();
     Type::type _input_type = T::type_num;
     Type::type _output_type = U::type_num;
 public:
@@ -58,7 +58,7 @@ template<typename T, typename U = UInt64Type>
 class DistinctCounter: public Aggregator
 {
 private:
-    TypedValue<U> val;
+    TypedValue<U> val = TypedValue<U>();
     std::set<TypedValue<T>> set;
     uint64_t setSize = 0;
     Type::type _input_type = T::type_num;
@@ -90,7 +90,7 @@ template<>
 class DistinctCounter<StringType, UInt64Type>: public Aggregator
 {
 private:
-    TypedValue<UInt64Type> val;
+    TypedValue<UInt64Type> val = TypedValue<UInt64Type>();
     std::set<std::string> set;
     uint64_t setSize = 0;
     Type::type _input_type = StringType::type_num;
@@ -122,10 +122,10 @@ template<typename T, typename U = UInt64Type>
 class Sum: public Aggregator
 {
 private:
-    TypedValue<U> val;
+    TypedValue<U> val = TypedValue<U>();
     uint64_t sum = 0;
     Type::type _input_type = T::type_num;
-    Type::type _output_type = UInt64Type::type_num;
+    Type::type _output_type = U::type_num;
 public:
     void input(const Value* input) override
     {
@@ -170,16 +170,16 @@ std::unique_ptr<Aggregator> Aggregator::factory(AggType::type type)
     return value;
 }
 
-//template std::unique_ptr<Aggregator> Aggregator::factory<UInt8Type>(AggType::type);
-//template std::unique_ptr<Aggregator> Aggregator::factory<Int8Type>(AggType::type);
-//template std::unique_ptr<Aggregator> Aggregator::factory<UInt16Type>(AggType::type);
-//template std::unique_ptr<Aggregator> Aggregator::factory<Int16Type>(AggType::type);
-//template std::unique_ptr<Aggregator> Aggregator::factory<UInt32Type>(AggType::type);
-//template std::unique_ptr<Aggregator> Aggregator::factory<Int32Type>(AggType::type);
-//template std::unique_ptr<Aggregator> Aggregator::factory<UInt64Type>(AggType::type);
-//template std::unique_ptr<Aggregator> Aggregator::factory<Int64Type>(AggType::type);
-//template std::unique_ptr<Aggregator> Aggregator::factory<FloatType>(AggType::type);
-//template std::unique_ptr<Aggregator> Aggregator::factory<DoubleType>(AggType::type);
-//template std::unique_ptr<Aggregator> Aggregator::factory<StringType>(AggType::type);
+template std::unique_ptr<Aggregator> Aggregator::factory<UInt8Type>(AggType::type);
+template std::unique_ptr<Aggregator> Aggregator::factory<Int8Type>(AggType::type);
+template std::unique_ptr<Aggregator> Aggregator::factory<UInt16Type>(AggType::type);
+template std::unique_ptr<Aggregator> Aggregator::factory<Int16Type>(AggType::type);
+template std::unique_ptr<Aggregator> Aggregator::factory<UInt32Type>(AggType::type);
+template std::unique_ptr<Aggregator> Aggregator::factory<Int32Type>(AggType::type);
+template std::unique_ptr<Aggregator> Aggregator::factory<UInt64Type>(AggType::type);
+template std::unique_ptr<Aggregator> Aggregator::factory<Int64Type>(AggType::type);
+template std::unique_ptr<Aggregator> Aggregator::factory<FloatType>(AggType::type);
+template std::unique_ptr<Aggregator> Aggregator::factory<DoubleType>(AggType::type);
+template std::unique_ptr<Aggregator> Aggregator::factory<StringType>(AggType::type);
 
 #endif // AGGREGATOR_H

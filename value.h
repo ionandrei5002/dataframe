@@ -16,6 +16,7 @@ public:
     virtual bytebuffer getValue() = 0;
     friend std::ostream& operator <<(std::ostream& output, const Value& val);
     virtual void print(std::ostream& output) const = 0;
+    virtual Type::type getType() = 0;
 };
 
 template<typename T>
@@ -49,6 +50,10 @@ public:
     {
         return !this->operator ==(val);
     }
+    Type::type getType() override
+    {
+        return T::type_num;
+    }
 };
 
 template<>
@@ -81,6 +86,10 @@ public:
     bool operator !=(const TypedValue<StringType>& val)
     {
         return !this->operator ==(val);
+    }
+    Type::type getType() override
+    {
+        return StringType::type_num;
     }
 };
 
