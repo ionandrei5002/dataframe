@@ -74,8 +74,6 @@ int main()
             piece.clear();
             sorting.push_back(counter);
             counter++;
-            if (counter == 10)
-                break;
         }
 
         end = chrono::high_resolution_clock::now();
@@ -105,12 +103,6 @@ int main()
                 total += colsize + idxsize;
             }
             cout << "total size " << total << " bytes" << endl;
-
-            for(uint64_t i = 0; i < dest.size(); i++)
-            {
-                uint64_t size = dest[i]->nb_elements;
-                cout << size << " " << dest[i]->getType() << endl;
-            }
         }
 
         ofstream outgroup("/home/andrei/Desktop/group.csv");

@@ -75,6 +75,7 @@ class ValueComparator {
 protected:
     Value* this_value;
 public:
+    ValueComparator():this_value(nullptr){}
     ValueComparator(Value* value):this_value(value){}
     virtual ~ValueComparator(){this_value = nullptr;}
     virtual Type::type getType() = 0;

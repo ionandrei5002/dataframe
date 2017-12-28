@@ -25,11 +25,7 @@ private:
     typename T::c_type _value;
     typedef typename T::c_type type;
 public:
-    TypedValue()
-    {
-        _value = type(0);
-    }
-    TypedValue(const TypedValue<T>& ref):_value(ref._value){}
+    TypedValue():_value(type(0)){}
     void setValue(const char* value, uint64_t size) override;
     void setValue(bytebuffer buff) override;
     bytebuffer getValue() override;
@@ -63,7 +59,6 @@ private:
     typedef typename StringType::c_type type;
 public:
     TypedValue():_value(type()){}
-    TypedValue(const TypedValue<StringType>& ref):_value(ref._value){}
     void setValue(const char* value, uint64_t size) override;
     void setValue(bytebuffer buff) override;
     bytebuffer getValue() override;

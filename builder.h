@@ -23,6 +23,7 @@ private:
     std::vector<std::unique_ptr<ValueComparator>> _groupby;
     std::vector<uint32_t> _group_columns;
     std::vector<std::unique_ptr<Aggregator>> _aggregators;
+    std::vector<AggType::type> _agg_columns;
     std::vector<Value*> _helper;
     std::shared_ptr<Comparator> comparatorMaker(Type::type type, std::unique_ptr<Column>& column);
     std::unique_ptr<ValueComparator> valueComparatorMaker(Type::type type);
@@ -31,11 +32,9 @@ private:
 public:
     Builder(std::vector<std::unique_ptr<Column>>& source):_source(source)
     {
-        for(uint64_t i = 0; i < source.size(); i++)
+        for(uint64_t i = 0; i< _source.size(); i++)
         {
-            Type::type operation_type = source[i]->getType();
-
-            _aggregators.push_back(aggregatorMaker(operation_type, AggType::NONE));
+            _agg_columns.push_back(AggType::NONE);
         }
     }
     Builder& applySortColumn(uint32_t column)
@@ -54,9 +53,7 @@ public:
     }
     Builder& applyAggregateColumn(uint32_t column, AggType::type type)
     {
-        Type::type operation_type = _source[column]->getType();
-
-        _aggregators[column] = aggregatorMaker(operation_type, type);
+        _agg_columns[column] = type;
 
         return *this;
     }
@@ -74,7 +71,7 @@ private:
     {
         uint64_t rows = _source[0]->nb_elements;
 
-        for(uint64_t i = 0; i < rows; i++)
+        for(uint32_t i = 0; i < rows; i++)
         {
             _sorting.push_back(i);
         }
@@ -91,6 +88,14 @@ private:
 
     void buildDestination()
     {
+        for(uint64_t i = 0; i < _source.size(); i++)
+        {
+            Type::type operation_type = _source[i]->getType();
+            AggType::type type = _agg_columns[i];
+
+            _aggregators.push_back(aggregatorMaker(operation_type, type));
+        }
+
         for(uint64_t i = 0; i < _source.size(); i++)
         {
             _destination.push_back(Column::factory(_aggregators[i]->outputType()));
@@ -112,11 +117,6 @@ private:
 
     void groupby()
     {
-        for(uint64_t i = 0; i < _source.size(); i++)
-        {
-            std::cout << i << " " << _source[i]->getType() << " " << _helper[i]->getType() << " " << _groupby[i]->getType() << " " << _aggregators[i]->outputType() << " " << _destination[i]->getType() << std::endl;
-        }
-
         start = std::chrono::high_resolution_clock::now();
         GroupBy groupby(_source, _destination, _sorting, _groupby, _group_columns, _aggregators, _helper);
         groupby.run();

@@ -20,7 +20,7 @@ class Aggregator
 {
 public:
     virtual ~Aggregator(){}
-    virtual void input(const Value* input) = 0;
+    virtual void input(Value* input) = 0;
     virtual Value* output() = 0;
     virtual void reset() = 0;
     virtual Type::type inputType() = 0;
@@ -38,7 +38,7 @@ private:
     Type::type _input_type = T::type_num;
     Type::type _output_type = U::type_num;
 public:
-    void input(const Value* input) override
+    void input(Value* input) override
     {
         bytebuffer buff = const_cast<Value*>(input)->getValue();
         val.setValue(buff);
@@ -64,10 +64,10 @@ private:
     Type::type _input_type = T::type_num;
     Type::type _output_type = U::type_num;
 public:
-    void input(const Value* input) override
+    void input(Value* input) override
     {
-        const TypedValue<T>* inputValue = static_cast<const TypedValue<T>*>(input);
-        set.insert(*inputValue);
+        const TypedValue<T> inputValue = *static_cast<const TypedValue<T>*>(input);
+        set.insert(inputValue);
     }
     Value* output() override
     {
@@ -79,6 +79,7 @@ public:
     }
     void reset()
     {
+        val = TypedValue<U>();
         setSize = 0;
         set.clear();
     }
@@ -96,10 +97,10 @@ private:
     Type::type _input_type = StringType::type_num;
     Type::type _output_type = UInt64Type::type_num;
 public:
-    void input(const Value* input) override
+    void input(Value* input) override
     {
-        TypedValue<StringType>* inputValue = static_cast<TypedValue<StringType>*>(const_cast<Value*>(input));
-        set.insert(std::string(inputValue->getValue()._buffer, inputValue->getValue()._size));
+        TypedValue<StringType> inputValue = *static_cast<TypedValue<StringType>*>(const_cast<Value*>(input));
+        set.insert(std::string(inputValue.getValue()._buffer, inputValue.getValue()._size));
     }
     Value* output() override
     {
@@ -111,6 +112,7 @@ public:
     }
     void reset()
     {
+        val = TypedValue<UInt64Type>();
         setSize = 0;
         set.clear();
     }
@@ -122,25 +124,60 @@ template<typename T, typename U = UInt64Type>
 class Sum: public Aggregator
 {
 private:
+    typedef typename T::c_type type;
     TypedValue<U> val = TypedValue<U>();
+    TypedValue<T> inputValue = TypedValue<T>();
     uint64_t sum = 0;
-    Type::type _input_type = T::type_num;
-    Type::type _output_type = U::type_num;
+    Type::type _input_type;
+    Type::type _output_type;
 public:
-    void input(const Value* input) override
+    Sum():val(TypedValue<U>()),inputValue(TypedValue<T>()),sum(0),_input_type(T::type_num),_output_type(U::type_num){}
+    void input(Value* input) override
     {
-        TypedValue<T>* inputValue = reinterpret_cast<TypedValue<T>*>(const_cast<Value*>(input));
-        sum += *reinterpret_cast<uint64_t*>(inputValue->getValue()._buffer);
+        inputValue.setValue(input->getValue());
+
+        sum += static_cast<uint64_t>(*reinterpret_cast<type*>(inputValue.getValue()._buffer));
     }
     Value* output() override
     {
         uint64_t typeSize = sizeof(sum);
         val.setValue(reinterpret_cast<const char*>(&sum), typeSize);
 
-        return reinterpret_cast<Value*>(&val);
+        return static_cast<Value*>(&val);
     }
     void reset()
     {
+        val = TypedValue<U>();
+        inputValue = TypedValue<T>();
+        sum = 0;
+    }
+    Type::type inputType() override { return _input_type; }
+    Type::type outputType() override { return _output_type; }
+};
+
+template<>
+class Sum<StringType, UInt64Type>: public Aggregator
+{
+private:
+    typename StringType::c_type type;
+    TypedValue<UInt64Type> val = TypedValue<UInt64Type>();
+    TypedValue<StringType> inputValue = TypedValue<StringType>();
+    uint64_t sum = 0;
+    Type::type _input_type;
+    Type::type _output_type;
+public:
+    Sum():val(TypedValue<UInt64Type>()),inputValue(TypedValue<StringType>()),sum(0),_input_type(StringType::type_num),_output_type(UInt64Type::type_num){}
+    void input(Value* input) override
+    {
+    }
+    Value* output() override
+    {
+        return static_cast<Value*>(&val);
+    }
+    void reset()
+    {
+        val = TypedValue<UInt64Type>();
+        inputValue = TypedValue<StringType>();
         sum = 0;
     }
     Type::type inputType() override { return _input_type; }
@@ -169,17 +206,5 @@ std::unique_ptr<Aggregator> Aggregator::factory(AggType::type type)
 
     return value;
 }
-
-template std::unique_ptr<Aggregator> Aggregator::factory<UInt8Type>(AggType::type);
-template std::unique_ptr<Aggregator> Aggregator::factory<Int8Type>(AggType::type);
-template std::unique_ptr<Aggregator> Aggregator::factory<UInt16Type>(AggType::type);
-template std::unique_ptr<Aggregator> Aggregator::factory<Int16Type>(AggType::type);
-template std::unique_ptr<Aggregator> Aggregator::factory<UInt32Type>(AggType::type);
-template std::unique_ptr<Aggregator> Aggregator::factory<Int32Type>(AggType::type);
-template std::unique_ptr<Aggregator> Aggregator::factory<UInt64Type>(AggType::type);
-template std::unique_ptr<Aggregator> Aggregator::factory<Int64Type>(AggType::type);
-template std::unique_ptr<Aggregator> Aggregator::factory<FloatType>(AggType::type);
-template std::unique_ptr<Aggregator> Aggregator::factory<DoubleType>(AggType::type);
-template std::unique_ptr<Aggregator> Aggregator::factory<StringType>(AggType::type);
 
 #endif // AGGREGATOR_H

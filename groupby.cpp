@@ -56,8 +56,6 @@ void GroupBy::run()
                     agg->input(_source[spos]->getValue(pos));
 
                     _helper[spos]->setValue(_source[spos]->getValue(pos)->getValue());
-
-                    std::cout << _helper[spos]->getType() << " " << _source[spos]->getType() << " " << _destination[spos]->getType() << std::endl;
                 }
                 size++;
             }

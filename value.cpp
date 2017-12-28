@@ -9,12 +9,12 @@ std::ostream& operator <<(std::ostream& output, const Value& val)
 template<typename T>
 void TypedValue<T>::print(std::ostream& output) const
 {
-    output << _value;
+    output << this->_value;
 }
 
 void TypedValue<StringType>::print(std::ostream& output) const
 {
-    output << _value;
+    output << this->_value;
 }
 
 template<typename T>
@@ -40,12 +40,6 @@ bytebuffer TypedValue<StringType>::getValue()
 
 template<typename T>
 void TypedValue<T>::setValue(const char *value, uint64_t size)
-{
-    this->_value = *reinterpret_cast<const type*>(value);
-}
-
-template<>
-void TypedValue<UInt64Type>::setValue(const char *value, uint64_t size)
 {
     this->_value = *reinterpret_cast<const type*>(value);
 }

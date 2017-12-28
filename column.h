@@ -14,12 +14,7 @@ public:
     std::vector<uint64_t> _position;
     uint64_t nb_elements = 0;
 public:
-    Column()
-    {
-        _column = std::vector<char>();
-        _position = std::vector<uint64_t>();
-        nb_elements = 0;
-    }
+    Column():_column(std::vector<char>()),_position(std::vector<uint64_t>()),nb_elements(0){}
     virtual ~Column(){}
     static std::unique_ptr<Column> factory(Type::type type);
     virtual void putValue(Value* value) = 0;
